@@ -1,0 +1,54 @@
+NB. project file: e:/dev/apps/qclient/source/base/base
+
+coclass 'jproject'
+
+PRIMARYFILES=: 0 : 0
+~Qclient/base/init
+~Qclient/base/util
+~Qclient/base/dates
+~Qclient/base/defs
+~Qclient/base/methods
+~Qclient/base/qtype
+~Qclient/base/sock
+~Qclient/base/toj
+~Qclient/base/toq
+~Qclient/base/zfns
+)
+
+PRIMARYLIBS=: 0 : 0
+dates
+dll
+libpath
+socket
+)
+
+DEVFILES=: ''
+
+DEVLIBS=: ''
+
+OTHERFILES=: 0 : 0
+~Qclient/base/export.ijs
+~Qclient/base/test0.ijs
+)
+
+TARGETFILE=: '~.Qclient/release/base.ijs'
+
+TARGETLOCALE=: 'cqclient'
+
+TARGETHEADER=: ''
+
+TARGETEXTRA=: ''
+
+BUILDOPTS=: 0 1 0 1 0 0 0
+
+PREBUILDFILE=: ''
+
+POSTBUILDFILE=: '~Qclient/base/post.ijs'
+
+TESTFILE=: '~Qclient/base/test.ijs'
+
+NOTES=: ''
+
+VERSION=: ''
+
+WINDOWS=: ''
