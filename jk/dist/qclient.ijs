@@ -1,4 +1,3 @@
-NB. built from project: ~Qclient/base/base
 NB. init
 
 script_z_ '~system/main/dates.ijs'
