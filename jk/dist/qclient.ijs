@@ -443,7 +443,14 @@ qtoJ=: 4 : 0
 if. 0 = #y do.
   throw 1;'no data'
 end.
-if. 128 = a.i.{.y do.
+select. a.i.{.y
+case. 101 do.
+  if. 2=#y do.
+    0;i.0 0 return.
+  else.
+    throw 1;'unexpected 101 return type'
+  end.
+case. 128 do.
   msg=. }. (y i. ALPH0) {. y
   throw 2;msg
 end.
@@ -493,6 +500,7 @@ if. FMT=1 do.
 end.
 )
 toJ_raw=: 4 : 0
+if. 0=#y do. y return. end.
 select. x
 case. 1 do. y ~: ALPH0
 case. 4 do. y
