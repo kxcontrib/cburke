@@ -1,0 +1,87 @@
+% front matter
+
+\newcommand*{\kxlogo}{
+ \includegraphics[scale=0.2]{kxlogo.pdf}} 
+
+\newcommand*{\setupshorttoc}{%
+  \renewcommand*{\contentsname}{Short contents}
+  \let\oldchangetocdepth\changetocdepth
+  \renewcommand*{\changetocdepth}[1]{}
+  \let\oldprecistoctext\precistoctext
+  \renewcommand{\precistoctext}[1]{}
+  \let\oldcftchapterfillnum\cftchapterfillnum
+  \setcounter{tocdepth}{0}
+  \let\oldcftpartformatpnum\cftpartformatpnum
+  \renewcommand*{\cftpartformatpnum}[1]{
+    \hbox to\unitlength{{\cftpartpagefont ##1}}}}
+
+\newcommand*{\setupmaintoc}{
+  \renewcommand{\contentsname}{Contents}
+  \let\changetocdepth\oldchangetocdepth
+  \let\precistoctext\oldprecistoctext
+  \let\cftchapterfillnum\oldcftchapterfillnum
+  \addtodef{\cftchapterbreak}{\par}{}
+  \setcounter{tocdepth}{2}}
+  \addtodef{\cftpartbreak}{\par}{}
+  \let\cftbookformatpnum\oldcftbookformatpnum
+  \addtodef{\cftbookbreak}{\par}{}
+  
+\let\oldcftsf\cftsectionfont
+\let\oldcftspn\cftsectionafterpnum
+\renewcommand*{\cftsectionfont}{
+ \let\oldnl\numberline
+ \renewcommand*{\numberline}[1]{}
+ \oldcftsf}
+\renewcommand*{\cftsectionafterpnum}{
+ \let\numberline\oldnl
+ \oldcftspn}
+
+\begingroup
+\pagestyle{empty}
+\raggedleft
+\vspace*{\baselineskip}
+{\Huge\itshape Q Reference}\\[\baselineskip]
+\clearpage
+\endgroup
+\newpage
+
+\begingroup
+\begin{center}
+\vspace*{\baselineskip}
+{\Huge Q Reference}\\[\baselineskip]
+\bigskip
+\kxlogo
+\vfill
+\vspace*{\baselineskip}
+\clearpage
+\end{center}
+\endgroup
+\newpage
+
+%% copyrightpage
+\begingroup
+\raggedright
+\parindent 0pt
+\parskip \baselineskip
+\textcopyright{} 2009 Kx Systems \\
+All rights reserved.\\
+\bigskip
+ISBN:xxx-x-xxxxx-x\\
+First edition: January 2010 \\
+15 14 13 12 11 10\hspace{2em}6 5 4 3 2 1\\
+\bigskip
+\bigskip
+xxx Press,\\
+Palo Alto, CA\\
+xxx.press@xyz.com\\ 
+\vspace*{2\baselineskip}
+\clearpage
+\endgroup
+
+\pagestyle{plain}
+\setupshorttoc
+\tableofcontents
+\cleardoublepage
+\setupmaintoc
+\tableofcontents
+\cleardoublepage

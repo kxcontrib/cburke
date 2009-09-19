@@ -1,0 +1,83 @@
+\documentclass[10pt,a4paper,showtrims]{memoir}
+\usepackage{calc}
+\usepackage{color}
+\usepackage{comment}
+\usepackage{fancyvrb}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{upquote}
+\usepackage{url}
+
+\definecolor{framecolor}{rgb}{0.20,0.20,0.20}
+\definecolor{shadecolor}{rgb}{0.90,0.90,0.93}
+\setlength{\parindent}{0pt}
+\nonzeroparskip
+\nouppercaseheads
+\pagestyle{headings}
+\raggedbottom
+\setbeforesubsecskip{-0.5\onelineskip}
+\setaftersubsecskip{0.25\onelineskip}
+\tightlists
+
+\fvset{fontsize=\small,samepage=true,xleftmargin=4mm,xrightmargin=2mm}
+
+\newsavebox{\minibox}
+\newenvironment{framedminipage}[1]
+{\begin{lrbox}{\minibox}\begin{minipage}{4.5in}}
+{\end{minipage}\end{lrbox}
+\fcolorbox{framecolor}{shadecolor}{\usebox{\minibox}}}
+
+\newcommand{\sechdr}[2]{
+{\color{white}\section{#1}}
+\vspace{-10pt}
+\begin{framedminipage}{4.5in}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lr} 
+\textbf{#1} & \emph{#2}
+\end{tabular*}
+\end{framedminipage}
+}
+
+\settrimmedsize{9in}{6in}{*}
+\settrims{0.5\stockheight-0.5\paperheight}{0.5\stockwidth-0.5\paperwidth}
+\settypeblocksize{6.8in}{4.5in}{*}
+\setlrmargins{*}{*}{1.618}
+\setulmargins{50pt}{*}{*}
+\setheaderspaces{*}{*}{1.618}
+\checkandfixthelayout
+
+% do this separately for each chapter
+% \setsecnumdepth{chapter}
+
+\chapterstyle{ell}
+
+% 1.  Introduction (e.g. terminology/data/functions/verbs/adverbs/syntax etc)
+% 2.  Q-sql (select/joins)
+% 3.  Main dictionary (symbols/numbers/names/dotz)
+% 4.  Appendices (e.g. command line/system commands/list of adverbs etc)
+
+\begin{document}
+
+\begin{comment}
+\end{comment}
+
+% \frontmatter
+% \input{f1}
+\mainmatter
+\chapter{Introduction}
+\input{t1}
+% \chapter{Q-SQL}
+% \input{t2}
+% \chapter{Symbols}
+% \input{t3}
+% \chapter{Numerics}
+% \input{t4}
+\chapter{Names}
+\input{t5}
+% \appendix
+% \chapter{Brief Reference}
+% \input{b1}
+
+% \backmatter
+\begin{comment}
+\end{comment}
+\end{document}
