@@ -1,5 +1,6 @@
 NB. init
 
+coclass 'cqclient'
 coinsert 'jsocket'
 
 NB. =========================================================

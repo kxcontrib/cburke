@@ -42,6 +42,27 @@ rc;<res
 )
 
 NB. =========================================================
+NB. qtoJs
+NB. as qtoJ but with string result expected
+qtoJs=: 4 : 0
+POS=: 0
+DAT=: y
+FMT=: x
+select. a.i.{.y
+case. 10 do.
+  toJ ''
+case. 0 do.
+  'network error',LF
+case. 101 do.
+  ''
+case. 128 do.
+  LF ,~ '''', }. (y i. ALPH0) {. y
+case. do.
+  LF ,~ 'unexpected return type: ',":a.i.{.y
+end.
+)
+
+NB. =========================================================
 toJ=: 3 : 0
 typ=. a. i. dread 1
 select. typ
@@ -95,9 +116,11 @@ case. 8 do. toJ_real y
 case. 9 do. toJ_float y
 case. 10 do. y
 case. 11 do. s: <;._2 y
+case. 12 do. toJ_long y
 case. 13 do. _2 ic y
 case. 14 do. _2 ic y
 case. 15 do. roundtime toJ_float y
+case. 16 do. toJ_long y
 case. 17 do. _2 ic y
 case. 18 do. _2 ic y
 case. 19 do. _2 ic y
@@ -108,9 +131,11 @@ end.
 NB. =========================================================
 toJ_fmt=: 4 : 0
 select. x
+case. 12 do. fmt_timestamp y
 case. 13 do. fmt_month y
 case. 14 do. fmt_date y
 case. 15 do. fmt_datetime y
+case. 16 do. fmt_timespan y
 case. 17 do. fmt_minute y
 case. 18 do. fmt_second y
 case. 19 do. fmt_time y
@@ -170,8 +195,8 @@ NB. =========================================================
 toJ_long=: 3 : 0
 dat=. _8 [\ a.i.y
 dat=. |."1 dat
-neg=. 0 ~: {."1 dat
-(256x #. }."1 dat) - neg * 2^56x
+neg=. 127 < {."1 dat
+(256x #. dat) - neg * 2^64x
 )
 
 NB. =========================================================

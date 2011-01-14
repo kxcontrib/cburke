@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+<max_series>500</max_series>
+<js_enabled>false</js_enabled>
+<redraw>true</redraw>
+<number_format>
+<letters>
+<letter number="1000">K</letter>
+<letter number="1000000">M</letter>
+<letter number="1000000000">B</letter>
+</letters>
+</number_format>
+
+<data_sets>
+<data_set>
+<csv>
+<separator>,</separator>
+<skip_first_rows>1</skip_first_rows>
+<columns><column>date</column><column>inside</column><column>outside</column><column>total</column></columns>
+DateFormat
+Data
+</csv>
+</data_set>
+</data_sets>
+
+<charts>
+<chart>
+<title>Trades Inside/Outside NBBO</title>
+<values>
+<x>
+<enabled>true</enabled>
+</x>
+</values>
+<legend>
+<show_date>true</show_date>
+</legend>
+<events>
+<use_hand_cursor>true</use_hand_cursor>
+</events>
+<column_width>95</column_width>
+<graphs>
+<graph>
+<type>column</type>
+<data_sources>
+<close>total</close>
+<open>outside</open>
+<high>inside</high>
+</data_sources>
+<color>#1f5b96</color>
+<fill_alpha>10</fill_alpha>
+<compare_source>close</compare_source>
+<legend>
+<date key="false" title="false"><![CDATA[inside:<b>{high}</b> outside:<b>{open}</b> ]]></date>
+</legend>
+</graph>
+<graph>
+<type>column</type>
+<data_sources>
+<close>outside</close>
+</data_sources>
+<color>#1f5b96</color>
+<fill_alpha>30</fill_alpha>
+</graph>
+</graphs>
+</chart>
+
+</charts>
+
+<data_set_selector>
+<enabled>false</enabled>
+</data_set_selector>
+
+<period_selector>
+<periods>
+<period type="mm" count="30">30m</period>
+<period type="hh" count="1">1h</period>
+<period type="hh" count="2">2h</period>
+<period  type="MAX" selected="true">MAX</period>
+</periods>	
+</period_selector>
+
+<header>
+<enabled>false</enabled>
+</header>
+
+<plot_area>
+<margins>15</margins>
+<bg_color>ffffff,daf0fd</bg_color>
+<bg_alpha>100</bg_alpha>
+<border_alpha>70</border_alpha>
+<border_color>ffffff</border_color>
+<border_width></border_width>
+<corner_radius>8</corner_radius>
+</plot_area>
+
+<scroller>
+<enabled>true</enabled>
+<height>50</height>
+<graph_data_source>total</graph_data_source>
+<graph_color>999999</graph_color>
+<bg_color>ffffff</bg_color>
+<selected_color>daf0fd</selected_color>
+<resize_button_color>1f5B96</resize_button_color>
+</scroller>
+
+</settings>

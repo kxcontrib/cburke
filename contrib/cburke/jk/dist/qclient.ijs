@@ -1,13 +1,4 @@
-NB. init
-
-script_z_ '~system/main/dates.ijs'
-script_z_ '~system/main/dll.ijs'
-script_z_ '~system/main/libpath.ijs'
-script_z_ '~system/main/socket.ijs'
-
 coclass 'cqclient'
-
-
 coinsert 'jsocket'
 create=: 3 : 0
 if. 1 = {.y do.
@@ -26,7 +17,7 @@ ischar=: 2 = 3!:0
 issymbol=: 65536 = 3!:0
 round=: [ * [: <. 0.5 + %~
 roundint=: <. @ +&0.5
-roundtime=: (%86400) & round
+roundtime=: (%86400000) & round
 commasep=: 3 : 0
 if. L. y do.
   }. ; (','&, @ ":) each y
@@ -39,9 +30,8 @@ if. L.y do. y return. end.
 y=. ' ',y
 a: -.~ (y e. ' ,') <;._1 y
 )
-qread=: 3 : 0
-y qtoJ 8 }. read''
-)
+qread=: 3 : 'y qtoJ 8 }. read'''''
+qreads=: 3 : 'y qtoJs 8 }. read'''''
 sizetype=: 3 : 'DATASIZES {~ DATANUMS i. y'
 sizevarchar=: 3 : 0
 ndx=. POS
@@ -73,7 +63,6 @@ else.
   throw 'data'
 end.
 )
-
 fix_date=: 3 : 0
 if. 0 (e.,) '.' = 4 7 {"1 y do. 10;y return. end.
 msk=. y -:"1 JDATENULL
@@ -87,9 +76,9 @@ if. 0 e. 'T' = 10 {"1 y do. 10;y return. end.
 msk=. y -:"1 JDATETIMENULL
 'rc dat'=. fix_date 10 {."1 y
 if. rc=10 do. 10;y return. end.
-'rc tim'=. fix_second 11 }."1 y
+'rc tim'=. fix_time 11 }."1 y
 if. rc=10 do. 10;y return. end.
-15;JFLOATNULL (I.msk) } dat + tim % 86400
+15;JFLOATNULL (I.msk) } dat + tim % 86400000
 )
 fix_minute=: 3 : 0
 if. 0 e. ':' = 2 {"1 y do. 10;y return. end.
@@ -135,13 +124,48 @@ else.
   10;y
 end.
 )
+fix_timespan=: 3 : 0
+x=. y i."1 'D'
+if. ({:$y) e. x do. 10;y return. end.
+n=. x {."0 1 y
+y=. (x-1) }."0 1 y
+if. 0 (e.,) 'D::.' -:"1 [ 1 4 7 10 {"1 y do. 10;y return. end.
+msk=. -. JTIMESPANNULL -: "1 (#JTIMESPANNULL) {."1 y
+n=. TSDAY * 0 ". msk # n
+val=. dat=. _1 ". ' ' 0 1 4 7 10 }"1 msk # y
+if. _1 (e.,) val do. 10;y return. end.
+cnt=. 0 60 60 1000000000x #. dat
+if. (val -: 0 60 60 1000000000 #:cnt) *: (cnt >: 0) *. cnt < TSDAY do.
+  10;y return.
+end.
+t=. n + cnt
+if. 0 e. msk do.
+  t=. JLONGNULL (I.-. msk) } msk expand t
+end.
+16;t
+)
+fix_timestamp=: 3 : 0
+if. 0 e. 'D' = 10 {"1 y do. 10;y return. end.
+msk=. -.y -:"1 JTIMESTAMPNULL
+t=. msk # y
+'rc dat'=. fix_date 10 {."1 t
+if. rc=10 do. 10;y return. end.
+'rc tim'=. fix_timespan '0',.10 }."1 t
+if. rc=10 do. 10;y return. end.
+t=. tim + dat * TSDAY
+if. 0 e. msk do.
+  t=. JLONGNULL (I.-. msk) } msk expand t
+end.
+12;t
+)
 fmt_date=: 3 : 0
 res=. '.' 4 7 }"1 [ 4 3 3 ": 0 100 100 +"1 todate 73048 + ,y
 JDATENULL (I. y= JINTNULL) } res
 )
 fmt_datetime=: 3 : 0
-res=. (fmt_date <. y),.'T',.fmt_second roundint 86400 * 1 | y
-JDATETIMENULL (I. y= JFLOATNULL) } res
+y=. y * msk=. y ~: JFLOATNULL
+res=. (fmt_date <. y),.'T',.fmt_time roundint 86400000 * 1 | y
+JDATETIMENULL (I. -.msk) } res
 )
 fmt_minute=: 3 : 0
 res=. ':' 2 }"1 }."1 [ 6j2 ": ,.100 ++/ 1 0.01 * |: 0 60 #: ,y
@@ -159,25 +183,46 @@ fmt_time=: 3 : 0
 res=. '::.' 2 5 8 }"1 }."1 [ 3 3 3 4 ": 100 100 100 1000 +"1 [ 0 60 60 1000 #: ,y
 JTIMENULL (I. y= JINTNULL) } res
 )
-
-
+fmt_timespan=: 3 : 0
+y=. y * msk=. y ~: JLONGNULL
+'d t n'=. |: 0 86400 1000000000x #: y
+d=. ":,.d
+t=. 'D::'0 3 6 }"1 'r(0)3.0' fmt 0 60 60 #: ,t
+n=. 'r(0)9.0' 8!:2 ,.n
+res=. d,.t,.'.',.n
+if. 0 e. msk do.
+  wid=. -{:$res
+  (wid{.JDATETIMENULL) (I. -.msk) } res
+end.
+)
+fmt_timestamp=: 3 : 0
+y=. y * msk=. y ~: JLONGNULL
+'n t'=. |: (0,TSDAY) #: y
+res=. (fmt_date n),.}."1 fmt_timespan t
+if. 0 e. msk do.
+  JTIMESTAMPNULL (I. -.msk) } res
+end.
+)
 ALPH0=: {.a.
 OK=: 0;EMPTY
 THROW=: ''
+TSDAY=: 864 * 10^11x
 
 KSHORTNULL=: <.-2^15
-KFLOATNULL=: 0 0 0 0 0 0 248 255 { a. 
+KFLOATNULL=: 0 0 0 0 0 0 248 255 { a.
 KREALNULL=: 0 0 192 255 { a.
 
 JINTNULL=: <.-2^31
 JFLOATNULL=: __
-JLONGNULL=: -2^56x
+JLONGNULL=: -2^63x
 JDATENULL=: 'nnnn.nn.nn'
-JDATETIMENULL=: 'nnnn.nn.nnTnn:nn:nn'
+JDATETIMENULL=: 'nnnn.nn.nnTnn:nn:nn.nnn'
 JMINUTENULL=: 'nn:nn'
 JMONTHNULL=: 'nnnn.nnm'
 JSECONDNULL=: 'nn:nn:nn'
 JTIMENULL=: 'nn:nn:nn.nnn'
+JTIMESPANNULL=: 'nDnn:nn:nn.nnnnnnnnn'
+JTIMESTAMPNULL=: 'nnnn.nn.nnDnn:nn:nn.nnnnnnnnn'
 
 JFLOATNULL8=: 2 fc JFLOATNULL
 JREALNULL4=: 1 fc JFLOATNULL
@@ -188,22 +233,24 @@ ASYNC=: (endian,0 0 0) { a.
 SYNC=: (endian,1 0 0) { a.
 RESPONSE=: (endian,2 0 0) { a.
 j=. ];._2 (0 : 0)
-boolean   1b                   b     1     1
-byte      0xff                 x     4     1
-short     23h                  h     5     2     0Nh
-int       23                   i     6     4     0N
-long      23j                  j     7     8     0Nj
-real      2.3e                 e     8     4     0Ne
-float     2.3                  f     9     8     0n
-char      "a"                  c     10    1     " "
-varchar   `ab                  s     11    *     `
-month     2003.03m             m     13    4     0Nm
-date      2003.03.23           d     14    4     0Nd
-datetime  2003.03.23T08:31:53  z     15    8     0Nz
-minute    08:31                u     17    4     0Nu
-second    08:31:53             v     18    4     0Nv
-time      09:10:35.000         t     19    4     0Nt
-enum      `s$`b, where s:`a`b  *     20..  4     `s$..
+boolean   1b                     b     1     1
+byte      0xff                   x     4     1
+short     23h                    h     5     2     0Nh
+int       23                     i     6     4     0N
+long      23j                    j     7     8     0Nj
+real      2.3e                   e     8     4     0Ne
+float     2.3                    f     9     8     0n
+char      "a"                    c     10    1     " "
+varchar   `ab                    s     11    *     `
+timestamp 2003.03.23D08:31:53.x9 p     12    8     0Np
+month     2003.03m               m     13    4     0Nm
+date      2003.03.23             d     14    4     0Nd
+datetime  2003.03.23T08:31:53    z     15    8     0Nz
+timespan  5D08:31:53.x9          n     16    8     0Nn
+minute    08:31                  u     17    4     0Nu
+second    08:31:53               v     18    4     0Nv
+time      09:10:35.000           t     19    4     0Nt
+enum      `s$`b, where s:`a`b    *     20..  4     `s$..
 )
 
 't j c n s z'=. j <;.1~ '';firstones +./j~:' '
@@ -212,7 +259,6 @@ DATATYPES=: (<"1 toupper t) -.each ' '
 DATANUMS=: 0 ". n
 DATASIZES=: _ ". s
 ('i',each toupper each DATATYPES)=: DATANUMS
-
 close=: 3 : 0
 destroy''
 OK
@@ -223,9 +269,9 @@ try.
   HOSTIP=: gethostip HOST
   SK=: sd_socket''
   sd_connect SK;HOSTIP,<PORT
-  send USER,{.a.
+  send USER,1 0{a.  
   res=. read''
-  if. res -: ,'c' do.
+  if. #res do.
     OK
   else.
     1;res
@@ -285,6 +331,11 @@ catcht. thrown end.
 get=: cmdr
 getf=: cmdrf
 getx=: cmdrx
+qxs=: 3 : 0
+try. send SYNC,ftoQs y
+  qreads 0
+catcht. 1 pick thrown end.
+)
 set=: 4 : 0
 try. sym=. s:<x
   'rc res'=. execr 'set';sym;<y
@@ -305,7 +356,6 @@ end.
 smoutput u
 cmd u
 )
-
 qtype=: 3 : 0
 if. (L.y) *. 1 2 -: $y do. ,y
 elseif. 2 = 3!:0 y do.
@@ -336,8 +386,9 @@ case. 8 do.
   end.
 case. 10 do. fix_date y
 case. 12 do. fix_time y
-case. 19 do. fix_datetime y
-case. do. 10;y
+case. 23 do. fix_datetime y
+case. 29 do. fix_timestamp y
+case. do. fix_timespan y
 end.
 )
 qtype1=: 3 : 0
@@ -363,11 +414,9 @@ case. do.
   end.
 end.
 )
-
 SK=: ''
 MAX=: 50000
-WAIT=: 20000
-WAIT=: 2000  
+WAIT=: 60000 
 SKACCEPT=: SKLISTEN=: '' 
 sd_accept=: 3 : '0 pick sd_check sdaccept y'
 sd_bind=: 3 : 'sd_check sdbind y'
@@ -429,7 +478,6 @@ EMPTY
 )
 read=: 3 : 'readsk SK'
 send=: 3 : 'y sendsk SK'
-
 dread=: 3 : 0
 if. y=1 do.
   res=. POS { DAT
@@ -461,6 +509,23 @@ res=. toJ ''
 rc=. POS ~: #DAT
 DAT=: ''
 rc;<res
+)
+qtoJs=: 4 : 0
+POS=: 0
+DAT=: y
+FMT=: x
+select. a.i.{.y
+case. 10 do.
+  toJ ''
+case. 0 do.
+  'network error',LF
+case. 101 do.
+  ''
+case. 128 do.
+  LF ,~ '''', }. (y i. ALPH0) {. y
+case. do.
+  LF ,~ 'unexpected return type: ',":a.i.{.y
+end.
 )
 toJ=: 3 : 0
 typ=. a. i. dread 1
@@ -511,9 +576,11 @@ case. 8 do. toJ_real y
 case. 9 do. toJ_float y
 case. 10 do. y
 case. 11 do. s: <;._2 y
+case. 12 do. toJ_long y
 case. 13 do. _2 ic y
 case. 14 do. _2 ic y
 case. 15 do. roundtime toJ_float y
+case. 16 do. toJ_long y
 case. 17 do. _2 ic y
 case. 18 do. _2 ic y
 case. 19 do. _2 ic y
@@ -522,9 +589,11 @@ end.
 )
 toJ_fmt=: 4 : 0
 select. x
+case. 12 do. fmt_timestamp y
 case. 13 do. fmt_month y
 case. 14 do. fmt_date y
 case. 15 do. fmt_datetime y
+case. 16 do. fmt_timespan y
 case. 17 do. fmt_minute y
 case. 18 do. fmt_second y
 case. 19 do. fmt_time y
@@ -562,15 +631,14 @@ end.
 toJ_long=: 3 : 0
 dat=. _8 [\ a.i.y
 dat=. |."1 dat
-neg=. 0 ~: {."1 dat
-(256x #. }."1 dat) - neg * 2^56x
+neg=. 127 < {."1 dat
+(256x #. dat) - neg * 2^64x
 )
 toJ_flip=: 3 : 0
 POS=: >: POS
 res=. toJ ''
 if. FMT~:2 do. |: res end.
 )
-
 ftoQ=: 3 : 0
 msg=. toQ boxxopen y
 (2 ic 8 + #msg), msg
@@ -594,6 +662,9 @@ case. do.
   hdr,typ toQ_base dat
 end.
 )
+toQs=: 3 : '(10 0 { a.),(2 ic #y),y'
+toQss=: 3 : '(0 0 { a.),(2 ic #y),;toQs each y'
+ftoQs=: 3 : '(2 ic 8 + #m),m=. toQss y'
 toQ_base=: 4 : 0
 select. | x - 256 * 128 < x
 case. 1 do. y { a.
@@ -605,9 +676,11 @@ case. 8 do. 1 fc y
 case. 9 do. 2 fc y
 case. 10 do. y
 case. 11 do. toQ_varchar y
+case. 12 do. toQ_long y
 case. 13 do. 2 ic y
 case. 14 do. 2 ic y
 case. 15 do. 2 fc y
+case. 16 do. toQ_longx y
 case. 17 do. 2 ic y
 case. 18 do. 2 ic y
 case. 19 do. 2 ic y
@@ -630,9 +703,9 @@ end.
 (99{a.),dat
 )
 toQ_long=: 3 : 0
-neg=. y < 1
-dat=. y + neg * 2^56x
-dat=. (255*neg) ,"0 1 (7#256) #: dat
+neg=. y < 0
+dat=. y + neg * 2^64x
+dat=. (8#256) #: dat
 ,|."1 dat { a.
 )
 toQ_flip=: 3 : '(98 0{a.),toQ_dict |:y'
@@ -643,7 +716,6 @@ else.
   ; (boxxopen y) ,each ALPH0
 end.
 )
-
 view_z_=: 3 : 'view__locQ y'
 ZFNS1=: 0 : 0
 connect

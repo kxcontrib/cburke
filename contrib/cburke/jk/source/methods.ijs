@@ -31,9 +31,9 @@ try.
   HOSTIP=: gethostip HOST
   SK=: sd_socket''
   sd_connect SK;HOSTIP,<PORT
-  send USER,{.a.
+  send USER,1 0{a.  NB. was USER,0{a.
   res=. read''
-  if. res -: ,'c' do.
+  if. #res do.
     OK
   else.
     1;res
@@ -132,6 +132,15 @@ NB. get - identical to cmdr
 get=: cmdr
 getf=: cmdrf
 getx=: cmdrx
+
+NB. =========================================================
+NB. qxs
+NB. send cmd;string to be executed, return string only
+qxs=: 3 : 0
+try. send SYNC,ftoQs y
+  qreads 0
+catcht. 1 pick thrown end.
+)
 
 NB. =========================================================
 NB. set v name set value

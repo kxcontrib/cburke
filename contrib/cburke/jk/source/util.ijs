@@ -9,7 +9,7 @@ ischar=: 2 = 3!:0
 issymbol=: 65536 = 3!:0
 round=: [ * [: <. 0.5 + %~
 roundint=: <. @ +&0.5
-roundtime=: (%86400) & round
+roundtime=: (%86400000) & round
 
 NB. =========================================================
 NB.commasep v separates boxed items with comma
@@ -30,9 +30,8 @@ a: -.~ (y e. ' ,') <;._1 y
 )
 
 NB. =========================================================
-qread=: 3 : 0
-y qtoJ 8 }. read''
-)
+qread=: 3 : 'y qtoJ 8 }. read'''''
+qreads=: 3 : 'y qtoJs 8 }. read'''''
 
 NB. =========================================================
 sizetype=: 3 : 'DATASIZES {~ DATANUMS i. y'

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+<max_series>500</max_series>
+<js_enabled>false</js_enabled>
+<redraw>true</redraw>
+<number_format>
+<letters>
+<letter number="1000">K</letter>
+<letter number="1000000">M</letter>
+<letter number="1000000000">B</letter>
+</letters>
+</number_format>
+
+<data_sets>
+<data_set>
+<csv>
+<separator>,</separator>
+<skip_first_rows>1</skip_first_rows>
+DateFormat
+Columns
+Data
+</csv>
+</data_set>
+</data_sets>
+
+<charts>
+<chart>
+<height>60</height>
+<title>Value</title>
+<values>
+<x>
+<enabled>true</enabled>
+</x>
+</values>
+<legend>
+<show_date>true</show_date>
+</legend>
+<events>
+<use_hand_cursor>true</use_hand_cursor>
+</events>
+<column_width>95</column_width>
+<graphs>
+<graph>
+Type
+DataSources
+Fill
+<legend>
+<date key="false" title="false"><![CDATA[{close}]]></date>
+<period key="false" title="false"><![CDATA[open:<b>{open}</b> low:<b>{low}</b> high:<b>{high}</b> close:<b>{close}</b>]]></period>
+<date_comparing key="false" title="false"><![CDATA[]]></date_comparing>
+<period_comparing key="false" title="false"><![CDATA[]]></period_comparing>
+</legend>
+</graph>
+</graphs>
+</chart>
+Size0
+<chart>
+<height>30</height>
+<title>Volume</title>
+<grid>
+<y_left>
+<approx_count>3</approx_count>
+</y_left>
+</grid>
+<legend>
+<show_date>false</show_date>
+</legend>
+<column_width>0</column_width>
+<graphs>
+<graph>
+<type>column</type>
+<data_sources>
+<close>size</close>
+</data_sources>
+<color>#5588cc</color>
+<period_value>average</period_value>
+<fill_alpha>50</fill_alpha>
+<legend>
+<date key="false" title="false"><![CDATA[{average}]]></date>
+<period key="false" title="false"><![CDATA[open:<b>{open}</b> low:<b>{low}</b> high:<b>{high}</b> close:<b>{close}</b>]]></period>
+<date_comparing key="false" title="false"><![CDATA[]]></date_comparing>
+<period_comparing key="false" title="false"><![CDATA[]]></period_comparing>
+</legend>
+</graph>
+</graphs>
+</chart>
+Size1
+</charts>
+<data_set_selector>
+<enabled>false</enabled>
+</data_set_selector>
+
+<period_selector>
+<periods>
+<period type="DD" count="1">1D</period>
+<period type="DD" count="5">5D</period>
+<period type="MM" count="1">1M</period>
+<period type="MM" count="3">3M</period>
+<period type="MM" count="6">6M</period>
+<period selected="true" type="YYYY" count="1">1Y</period>
+<period type="YYYY" count="3">3Y</period>
+<period type="MAX">MAX</period>
+</periods>
+<periods_title>Zoom:</periods_title>
+</period_selector>
+
+<header>
+<enabled>false</enabled>
+</header>
+
+<plot_area>
+<margins>15</margins>
+<bg_color>ffffff,daf0fd</bg_color>
+<bg_alpha>100</bg_alpha>
+<border_alpha>70</border_alpha>
+<border_color>ffffff</border_color>
+<border_width></border_width>
+<corner_radius>8</corner_radius>
+</plot_area>
+
+<scroller>
+<height>50</height>
+<graph_data_source>close</graph_data_source>
+<graph_color>999999</graph_color>
+<bg_color>ffffff</bg_color>
+<selected_color>daf0fd</selected_color>
+<graph_selected_fill_color>3366cc</graph_selected_fill_color>
+<resize_button_color>1f5B96</resize_button_color>
+</scroller>
+
+</settings>
