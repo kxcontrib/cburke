@@ -2,8 +2,7 @@ NB. sock
 
 SK=: ''
 MAX=: 50000
-WAIT=: 20000
-WAIT=: 2000  NB. 2 seconds for testing
+WAIT=: 60000 NB. 60 seconds
 SKACCEPT=: SKLISTEN=: '' NB. for server
 
 NB. =========================================================
@@ -39,12 +38,10 @@ sd_gethostbyname y
 NB. =========================================================
 readsk=: 3 : 0
 r=. read1 y
-NB. smoutput 'reading: ',":#r
 if. 8 > #r do. return. end.
 len=. _2 ic 4 5 6 7 { r
 while. len > #r do.
   txt=. read1 y
-NB.   smoutput 'reading: ',":#txt
   if. 0=#txt do.
     throw 'read'
   else.

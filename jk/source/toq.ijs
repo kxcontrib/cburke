@@ -5,12 +5,14 @@ NB. convert j data to q
 NB. =========================================================
 NB. function, parameter list to Q
 ftoQ=: 3 : 0
+NB. smoutput 'ftoQ';y
 msg=. toQ boxxopen y
 (2 ic 8 + #msg), msg
 )
 
 NB. =========================================================
 toQ=: 3 : 0
+NB. smoutput 'toQ';y
 'typ dat'=. qtype y
 select. typ
 case. 0 do.
@@ -31,6 +33,12 @@ end.
 )
 
 NB. =========================================================
+NB. strings only:
+toQs=: 3 : '(10 0 { a.),(2 ic #y),y'
+toQss=: 3 : '(0 0 { a.),(2 ic #y),;toQs each y'
+ftoQs=: 3 : '(2 ic 8 + #m),m=. toQss y'
+
+NB. =========================================================
 toQ_base=: 4 : 0
 select. | x - 256 * 128 < x
 case. 1 do. y { a.
@@ -42,9 +50,11 @@ case. 8 do. 1 fc y
 case. 9 do. 2 fc y
 case. 10 do. y
 case. 11 do. toQ_varchar y
+case. 12 do. toQ_long y
 case. 13 do. 2 ic y
 case. 14 do. 2 ic y
 case. 15 do. 2 fc y
+case. 16 do. toQ_longx y
 case. 17 do. 2 ic y
 case. 18 do. 2 ic y
 case. 19 do. 2 ic y
@@ -72,9 +82,9 @@ end.
 
 NB. =========================================================
 toQ_long=: 3 : 0
-neg=. y < 1
-dat=. y + neg * 2^56x
-dat=. (255*neg) ,"0 1 (7#256) #: dat
+neg=. y < 0
+dat=. y + neg * 2^64x
+dat=. (8#256) #: dat
 ,|."1 dat { a.
 )
 

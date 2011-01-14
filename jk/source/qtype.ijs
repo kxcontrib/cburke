@@ -7,6 +7,7 @@ NB. qtype
 NB.
 NB. return: type;data
 qtype=: 3 : 0
+NB. smoutput 'qtype';($y);y
 if. (L.y) *. 1 2 -: $y do. ,y
 elseif. 2 = 3!:0 y do.
   select. #$y
@@ -30,6 +31,7 @@ typ;dat
 
 NB. =========================================================
 qtypechar2=: 3 : 0
+NB. smoutput 'qtypechar2';($y);y
 select. {:$y
 case. 5 do. fix_minute y
 case. 8 do.
@@ -40,8 +42,9 @@ case. 8 do.
   end.
 case. 10 do. fix_date y
 case. 12 do. fix_time y
-case. 19 do. fix_datetime y
-case. do. 10;y
+case. 23 do. fix_datetime y
+case. 29 do. fix_timestamp y
+case. do. fix_timespan y
 end.
 )
 
