@@ -10,15 +10,17 @@
 / trade: date time sym price size stop cond ex
 //
 / trade, quote, nbbo are partitioned by date
-/ partition by segment a-m,n-z is optional
+/ round robin partition is optional
 //
-/ requires write permission in target directory
+/ requires write permission in target directories
 
 / config
-dst:`:db/tickdemo   / database root
+dst:`:start/db      / database root
+dsp:""              / optional database segment root
+dsx:5               / number of segments
 
-bgn:2007.01.01      / begin, end (only mon-fri used)
-end:2010.12.31
+bgn:2010.12.01      / begin, end
+end:2010.12.31      / (only mon-fri used)
 
 / approximate values:
 nt:1000             / trades per stock per day
@@ -41,7 +43,6 @@ xrnd:{exp x * limit[2] normalrand y}
 randomize:{value "\\S ",string "i"$0.8*.z.p%1000000000}
 vol:{10+`int$x?90}
 vol2:{x?100*1 1 1 1 2 2 3 4 5 8 10 15 20}
-write:{(` sv dst,`$x) set .Q.en[dst] y}
 
 / =========================================================
 choleski:{
@@ -74,6 +75,12 @@ volprof:{
  e:2-(c?1.0) xexp p;
  m:(x-2*c)?1.0;
  {(neg count x)?x} m,0.5*b,e}
+
+/ =========================================================
+write:{
+ $[count dsp;
+  (` sv dsp,(`$"d",string dspx),`$x) set .Q.en[dst] y;
+  (` sv dst,`$x) set .Q.en[dst] y];}
 / symbol data for tick demo
 
 sn:2 cut (
@@ -162,6 +169,7 @@ td:([]date:();sym:();open:();high:();low:();close:();price:();size:())
 
 prices:makeprices nd + 1
 volumes:floor (cnt*nt*qpt+npt) * makevolumes nd
+dspx:0
 
 day:{
   len:volumes x;
@@ -180,7 +188,8 @@ day:{
   tn:([]time:r n;sym:s qx n;bid:(qp-qbb)n;ask:(qp+qba)n;bsize:vol cn;asize:vol cn);
   write[sa,"/trade/";t];
   write[sa,"/quote/";tq];
-  write[sa,"/nbbo/";tn]}
+  write[sa,"/nbbo/";tn];
+  dspx::(dspx+1) mod dsx;}
 
 day each til nd;
 
@@ -193,3 +202,4 @@ day each til nd;
 
 (` sv dst,`daily) set .Q.en[dst] td;
 (` sv dst,`mas) set .Q.en[dst] ([]sym:s;name:n);
+if[count dsp;(` sv dst,`par.txt) 0: ((1_string dsp),"/d") ,/: string til dsx];
