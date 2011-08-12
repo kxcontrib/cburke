@@ -78,9 +78,10 @@ volprof:{
 
 / =========================================================
 write:{
+ t:.Q.en[dst] y;
  $[count dsp;
-  (` sv dsp,(`$"d",string dspx),`$x) set .Q.en[dst] y;
-  (` sv dst,`$x) set .Q.en[dst] y];}
+  (` sv dsp,(`$"d",string dspx),`$x) set t;
+  (` sv dst,`$x) set t];}
 / symbol data for tick demo
 
 sn:2 cut (

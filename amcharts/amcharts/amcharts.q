@@ -32,6 +32,7 @@ getfill:{xml["fill_alpha";string x]}
 / =========================================================
 multidata:{[x;datefmt;cls;pos;sym]
  if[0=count sym;:""];
+ x:`date xcol x;
  x:?[x;(enlist (=;`sym;enlist sym));0b;`date`close!`date`close];
  r:"<data_set>\n<title>",(string sym),"</title>\n";
  if[pos=0;r,:"<main_drop_down selected=\"true\">true</main_drop_down>\n"];
@@ -77,10 +78,11 @@ plot_hlvwap:{
 
 / =========================================================
 plot_multi:{
- x:0!x;
+ x:`date xcol 0!x; 
  c:cols x;
  if[not `sym in c;:plot_price x];
- s:value exec distinct sym from x;
+ s:exec distinct sym from x;
+ if[not 11h=type s;s:value s];
  if[1=count s;:plot_price flip c!x c:c except `sym;];
  x:fixdate x;
  ratio:01b~`close`rprice in c;
@@ -163,10 +165,13 @@ plot_volprof:{
 / main
 
 plot:{
+ x:0!x;
+ if[`date`time~2#cols x;(x`date):(x`date)+x`time;x:delete time from x];
  c:cols x;
  if[`side`price`size~c;:plot_bookdepth x];
  if[`minute`inside`outside~c;:plot_regnms x];
  if[`minute`volume~c;:plot_volprof x];
+ x:`date xcol x;
  if[`high`low`vwap~c 1 2 3;:plot_hlvwap x];
  if[`open`high`low`close~c 1 2 3 4;:plot_ohlc x];
  plot_price x}
