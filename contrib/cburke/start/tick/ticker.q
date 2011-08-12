@@ -14,7 +14,10 @@ pub1:{[t;s;h]
  if[count sel;@[h;("upd";t;sel);()]]}
 
 upd:{[t;x]
-  m:enlist(count x 0)#.z.T;
-  t insert m,x;
-  pub t;
-  delete from t}
+ m:enlist(count x 0)#.z.T;  
+ upd1[t;m,x]}
+
+upd1:{[t;x]  
+ t insert x;
+ pub t;
+ delete from t}

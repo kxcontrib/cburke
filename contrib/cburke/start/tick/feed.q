@@ -14,7 +14,7 @@ sn:2 cut (
  
 s:first each sn
 n:last each sn
-p:84 27 33 12 20 18 36 84 42 72 / price
+p:84 27 33 12 20 37 18 84 39 72 / price
 m:" ABHILNORYZ" / mode
 c:" 89ABCEGJKLNOPRTWZ" / cond
 e:"NONNONONNN" / ex
@@ -23,6 +23,7 @@ e:"NONNONONNN" / ex
 cnt:count s
 pi:acos -1
 gen:{exp 0.0015 * normalrand x} / prices
+gen:{exp 0.001 * normalrand x} / prices
 normalrand:{(cos 2 * pi * x ? 1f) * sqrt neg 2 * log x ? 1f}
 randomize:{value "\\S ",string "i"$0.8*.z.p%1000000000}
 rnd:{0.01*floor 0.5+x*100}
@@ -64,12 +65,23 @@ q:{
  i:qx n:qn+til x;p:qp n;qn+:x;
  (s i;p-qb n;p+qa n;vol x;vol x;x?m;e i)}
 
-h:hopen `::5010
+feed:{h$[rand 2;
+ ("upd";`trade;t 1+rand maxn);
+ ("upd";`quote;q 1+rand qpt*maxn)];}
 
+feedm:{h$[rand 2;
+ ("upd1";`trade;(enlist a#x),t a:1+rand maxn);
+ ("upd1";`quote;(enlist a#x),q a:1+rand qpt*maxn)];}
+
+init:{
+ o:"t"$9e5*floor (.z.T-3600000)%9e5;
+ d:.z.T-o;
+ len:floor d%113;
+ feedm each o+asc len?d;}
+
+h:neg hopen `::5010
 / h("upd";`quote;q 15);
 / h("upd";`trade;t 5);
 
-/ =========================================================
-.z.ts:{(neg h)$[rand 2;
- ("upd";`trade;t 1+rand maxn);
- ("upd";`quote;q 1+rand qpt*maxn)]}
+init 0
+.z.ts:feed
