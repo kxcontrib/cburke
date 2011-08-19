@@ -164,7 +164,7 @@ plot_volprof:{
  stock 0: t;}
 / main
 
-plot:{
+amplot:{
  x:0!x;
  if[`date`time~2#cols x;(x`date):(x`date)+x`time;x:delete time from x];
  c:cols x;
