@@ -29,7 +29,8 @@ randomize:{value "\\S ",string "i"$0.8*.z.p%1000000000}
 rnd:{0.01*floor 0.5+x*100}
 vol:{10+`int$x?90}
 
-randomize[]
+/ randomize[]
+\S 235721
 
 / =========================================================
 / generate a batch of prices
@@ -50,7 +51,7 @@ batch:{
 len:10000
 batch len
 
-maxn:10 / max trades per tick
+maxn:15 / max trades per tick
 qpt:5   / avg quotes per trade
 
 / =========================================================
