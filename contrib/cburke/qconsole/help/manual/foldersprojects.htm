@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>Folders and Projects</title>
+  <link rel="stylesheet" href="qconsole.css" type="text/css" />
+</head>
+<body>
+<div id="header">
+<h1 class="title">Folders and Projects</h1>
+</div>
+<h1 id="folders-and-projects">Folders and Projects</h1>
+<p>There are two related concepts, <em>folder</em> and <em>project</em>, that help you work with source files. Both are simply references to directories.</p>
+<h2 id="folder">Folder</h2>
+<p>A folder is a name given to a directory. Using folder names instead of full pathnames means that names are typically much shorter, and that it is easier to share code between users with very different directory structures.</p>
+<p>The noun .qx.folderss has a table of such names, for example:</p>
+<pre><code>q).qx.folderss
+home     | &quot;/home/elmo&quot;
+qhome    | &quot;/home/elmo/q&quot;
+Base     | &quot;/home/elmo/q/dev/base&quot;
+Data     | &quot;/home/elmo/q/dev/data&quot;
+Interface| &quot;/home/elmo/q/dev/interface&quot;
+...
+</code></pre>
+<p>System folders have names beginning with lowercase characters and are defined when the IDE is loaded. User folders have names beginning with uppercase, and are defined in config file folders.cfg. The IDE assumes that source files are stored in user folders.</p>
+<p>Function .qx.paths references the folder tables. It converts strings with folder names preceded with ~ into their full pathname:</p>
+<pre><code>q).qx.paths &quot;~Base/init.q&quot;
+&quot;/home/elmo/q/dev/base/init.q&quot;
+</code></pre>
+<p>Function .qx.path returns a filename:</p>
+<pre><code>q).qx.path &quot;~Base/init.q&quot;
+`:/home/elmo/q/dev/base/init.q
+</code></pre>
+<p>A dot prefix references the parent folder:</p>
+<pre><code>q).qx.paths &quot;~.Base/test.q&quot;
+&quot;/home/elmo/q/dev/test.q&quot;
+</code></pre>
+<h2 id="project">Project</h2>
+<p>A project is a subdirectory that contains a file with extension .qproj with the same name as the directory. For example, if file /home/elmo/mywork/grid/grid.qproj exists, then the directory /home/elmo/mywork/grid is recognized as a project directory.</p>
+<p>Typically, project directories are subdirectories of folders. For example, if folder name Mywork points to /home/elmo/mywork, then the grid project can be referenced as ~Mywork/grid. In the IDE, the ~ prefix is usually omitted.</p>
+<p>In a project directory, scripts build.q and run.q are treated specially (if they exist). Menu Project|Build runs build.q, and menu Project|Run runs build.q and then run.q.</p>
+<p>A .qproj file can define a list of files that would typically be the source files used to build a target script. If so, then functions:</p>
+<ul>
+<li>.qx.readsource reads all source files, and returns a character string</li>
+<li>.qx.writesource reads the source, and then writes to file</li>
+</ul>
+<p>For example, the following reads all source in the project ~Main/project, and writes to ~qhome/util/project.q. Typically, this command would be given in the project's build script:</p>
+<pre><code>.qx.writesource &quot;~Main/project&quot;;&quot;~qhome/util/project.q&quot;
+</code></pre>
+<hr />
+<p>Prev: <a href="edit.htm">Edit</a> Next: <a href="snapshots.htm">Snapshots</a><br/></p>
+<p><a href="index.htm">Index</a></p>
+</body>
+</html>

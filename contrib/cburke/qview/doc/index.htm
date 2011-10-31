@@ -1,0 +1,75 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+<style>body {margin: 1em 5% 1em 5%}
+b,pre,tt {color:#000080}
+pre {background:#fffaf4; border:1pt solid #aebdcc; padding:5pt}
+h1,h2,h3 {color:#015293;font-family:sans-serif;border-bottom:2px solid silver;
+ margin-top:1.2em;margin-bottom:0.5em;line-height:1.3}
+</style>
+<title>qview</title>
+</head><body>
+<h1 id="qview">qview</h1>
+<h2 id="introduction">Introduction</h2>
+<p>
+qview is a grid and plot system for displaying kdb+ tables in a linux console session.
+It uses gtk cairo graphics, and is built as a linux shared object.
+<p>
+The plot styles are similar to those in contrib/cburke/amcharts.
+The amcharts plots are more professional looking but much slower to load and better
+suited for static display, while qview plots can be updated in real time.
+<p>
+To install, run make in the source directory
+(glib and gtk development libraries are required).
+<p>
+Define cover functions as:
+<pre>grid:`qview 2:(`grid;1)
+plot:`qview 2:(`plot;1)
+grids:`qview 2:(`grids;1)
+plots:`qview 2:(`plots;1)
+</pre>
+<h2 id="syntax">Syntax</h2>
+<p>
+The argument is either a table, or a pair (table;parameter list). Parameters are a list
+of (keyword;value...), for keywords caption, title, window. For example:
+<pre>grid tab      / grid tab in default window (0)
+plots tab     / plot tab in new window
+plot(tab;("window";3;"title";"myplot"))   / plot tab in window 3, with given title
+</pre>
+<h2 id="windows">Windows</h2>
+<p>
+By default, <tt><nobr>grid</nobr></tt> and <tt><nobr>plot</nobr></tt> reuse a single window (window 0),
+while <tt><nobr>grids</nobr></tt> and <tt><nobr>plots</nobr></tt> create a new window. Each function returns
+its window handle.
+<p>
+Window handles are from 0 to 99.
+<h2 id="grid">Grid</h2>
+<p>
+<a href="grid.htm">Grid</a> has a single style.
+<h2 id="plottypes">Plot types</h2>
+<p>
+The table meta data indicates the type of plot.
+A Price plot is drawn if other types do not match.
+<p>
+<a href="bookdepth.htm">Book Depth</a> 
+<br>
+<a href="ohlc.htm">Open/High/Low/Close</a> 
+<br>
+<a href="price.htm">Price</a> 
+<br>
+<a href="regnms.htm">RegNMS</a> 
+<br>
+<a href="volprof.htm">Volume Profile</a> 
+<br>
+<h2 id="demos">Demos</h2>
+<p>
+The demo directory has examples of each plot. Copy to your q home directory, then load q and:
+<pre>\l demo/qview.q
+</pre>
+<hr>
+<p>
+Next: <a href="grid.htm">Grid</a>
+<p>
+cdb 
+<br>
+9 Oct 2011
+</body></html>
