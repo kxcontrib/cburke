@@ -1,0 +1,19 @@
+/* qconsole.css */
+
+h1 {color:#015293}
+b,pre,tt {color:#000080}
+
+h1 {font-size:1.4em}
+h2 {font-size:1.2em}
+h3 {font-size:1em}
+
+h1,h2,h3 {
+border-bottom:1px solid #6487DC;
+font-family:sans-serif;
+line-height:1.2em;
+}
+
+h1.title {display:none}
+
+pre {background:#fffaf4; border:1pt solid #aebdcc; padding:5pt}
+pre {background:#f4f4f4; border:1pt solid #aebdcc; padding:5pt}

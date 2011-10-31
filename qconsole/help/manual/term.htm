@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>Term</title>
+  <link rel="stylesheet" href="qconsole.css" type="text/css" />
+</head>
+<body>
+<div id="header">
+<h1 class="title">Term</h1>
+</div>
+<h1 id="term">Term</h1>
+<p>The behaviour is that of the usual q terminal, except for the following:</p>
+<h2 id="modes">Modes</h2>
+<p>There are terminal modes for q, k and s with corresponding prompts. There is also a j mode, see <a href="term.htm#j-mode">J Mode</a>, and an r mode that requires the R server for q from the Kx wiki.</p>
+<p>A backslash by itself (<code>\</code>) toggles q) and k) modes. The Tools|Modes menu or Shift+Ctrl+mode letter sets any mode.</p>
+<p>In modes q and k, <code>\d .X</code> switches context to X, see also <a href="term.htm#context">Context</a>. Also, a command may be given with context. For example:</p>
+<pre><code>q)a:1
+q)\d .fx                  / change context
+q.fx)a                    / a not defined here
+'a
+q.fx)a:&quot;abc&quot;              / define a in fx
+q.fx)a          
+&quot;abc&quot;
+q.fx)\d .                 / return to base context
+q)a                       
+1
+q)q.fx)a                  / enter command with context
+&quot;abc&quot;
+</code></pre>
+<h2 id="line-recall">Line Recall</h2>
+<p>For line recall:</p>
+<ul>
+<li>Shift+Ctrl+up/down arrow traverses the input log</li>
+<li>Ctrl+D runs the input log selection dialog. The list shows the mode if different from the current mode.</li>
+<li>move cursor to any place in the session, then press Enter to copy line as the current input line</li>
+</ul>
+<h2 id="console-size">Console Size</h2>
+<p>This is set dynamically on window resize. For example, enter <code>\c</code> , resize the window and try <code>\c</code> again.</p>
+<h2 id="help">Help</h2>
+<p>The help menu links to a local copy of the wiki Reference, and to Simon's brief reference, shown in the web browser. If no help appears, check the Browser definition in base.cfg.</p>
+<p>Press Ctrl+F1 when the cursor is on a keyword or primitive, this brings up context-sensitive help (if available). The line is parsed to determine the identifier to be referenced, and works best when the line is well-formed q code.</p>
+<h2 id="show">show</h2>
+<p>The q show command dumps output to the server console, and returns null to an ipc client. The IDE works around this when a command begins with <code>show ...</code>, and displays the result in both the server and IDE consoles. Note that this will not work when running a q function that calls show.</p>
+<h2 id="context">Context</h2>
+<p>In a server session, the command <code>\d .X</code> changes context to X. Thereafter, subsequent commands are in that context.</p>
+<p>A client communicating via ipc cannot switch context on the server. Qconsole simulates this by prefixing commands with the context if appropriate, i.e. to simulate context X, a command is sent in the form:</p>
+<pre><code>value&quot;\\d .X&quot;;command...
+</code></pre>
+<p>Note that this is <em>not</em> identical to first switching contexts on the server. The difference is that when defining functions in a server context, global names reference the context names, whereas in the simulated context, global names reference the base names. For example, in qconsole:</p>
+<pre><code>q)a:1
+q)\d .ex
+q.ex)a:&quot;abc&quot;
+q.ex)f:{a}
+q.ex)f 0        / global a is referenced in the base context
+1
+</code></pre>
+<h2 id="colors">Colors</h2>
+<p>The color config is in lib/term.xml.</p>
+<h2 id="j-mode">J Mode</h2>
+<p>The j mode calls directly to the J interpreter and can be used for debugging the j/gtk console.</p>
+<pre><code>j)p:i.5
+2 3 5 7 11
+</code></pre>
+<p>If the j/gtk console window is shown on startup, then menu Tools|Modes|j console gives input focus to that window.</p>
+<hr />
+<p>Prev: <a href="overview.htm">Overview</a> Next: <a href="edit.htm">Edit</a><br/></p>
+<p><a href="index.htm">Index</a></p>
+</body>
+</html>

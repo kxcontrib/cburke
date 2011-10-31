@@ -1,0 +1,10 @@
+# project: Dev/gnuplot
+#
+# defines list of source scripts.
+# path defaults to project directory.
+
+init.q
+util.q
+gplot.q
+set.q
+main.q

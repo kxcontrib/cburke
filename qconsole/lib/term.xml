@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<style-scheme id="term" _name="term (no syntax highlights)" version="1.0">
+  <author>cdb</author>
+  <_description>qconsole terminal</_description>
+
+  <color name="white"           value="#ffffff"/>
+  <color name="blue"            value="#0000ff"/>
+  <color name="light-blue"      value="#4444ff"/>
+  <color name="light-yellow"    value="#fcfcdd"/>
+  <color name="cornsilk"        value="#fff8dc"/>
+  <color name="high"            value="#e5e5d5"/>
+
+  <style name="text"            foreground="blue" background="cornsilk"/>
+  <style name="selection"       foreground="white" background="light-blue"/>
+  <style name="current-line"    background="high"/>
+
+</style-scheme>
+

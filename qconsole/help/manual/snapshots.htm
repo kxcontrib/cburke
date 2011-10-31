@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>Snapshots</title>
+  <link rel="stylesheet" href="qconsole.css" type="text/css" />
+</head>
+<body>
+<div id="header">
+<h1 class="title">Snapshots</h1>
+</div>
+<h1 id="project-snapshots">Project Snapshots</h1>
+<p>These are intended as simple way of allowing comparisons between the current state of the project and an earlier state, or recovering from an earlier version. They are not a substitute for a proper version control system like Git or Subversion. Instead, snapshots are complementary, intended primarily for quick comparisons of work in progress, rather than keeping track of major code releases.</p>
+<p>The number of Snapshots kept is given in base.cfg, default 5.</p>
+<p>Snapshots are made automatically, and can also be made manually. Automatic snapshots are made when a project is loaded, as follows:</p>
+<ul>
+<li>if the snapshot directory does not exist or is empty, make a snapshot and exit.</li>
+<li>if there is a snapshot with today's date, then exit.</li>
+<li>if the current contents of the project match the most recent snapshot, then exit.</li>
+<li>make a snapshot.</li>
+</ul>
+<p>Manual snapshots can be made by selecting menu Project|Make Snapshot. Snapshots are made only if the current project directory differs from the most recent snapshot.</p>
+<p>To compare project snapshots, select menu Project|Project Snapshots. This runs Directory Match on the snapshots and current version. By default, the latest snapshot is compared with the current project.</p>
+<h1 id="script-snapshots">Script Snapshots</h1>
+<p>Script snapshots are automatically saved as scripts are changed and run. Snapshots are saved for changes today and the most recent date with any change in the project.</p>
+<p>Use menu Script|Script Snapshots to view, compare and restore the snapshots.</p>
+<p>Snapshots are stored in the snap/.snp subdirectory.</p>
+<h2 id="comparison-utility">Comparison Utility</h2>
+<p>Snapshot comparisons can use a basic built-in viewer, but for best use, define an external viewer in XDiff in base.cfg.</p>
+<hr />
+<p>Prev: <a href="foldersprojects.htm">Folders and Projects</a><br/></p>
+<p><a href="index.htm">Index</a></p>
+</body>
+</html>

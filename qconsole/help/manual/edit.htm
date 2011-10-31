@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>Edit</title>
+  <link rel="stylesheet" href="qconsole.css" type="text/css" />
+</head>
+<body>
+<div id="header">
+<h1 class="title">Edit</h1>
+</div>
+<h1 id="edit">Edit</h1>
+<p>This is a tabbed text editor, with an optional sidebar, project manager, code snapshots, and various run options for scripts.</p>
+<p>Press Ctrl+M in the terminal to show the editor. In the editor, press Ctrl+B to hide/unhide the sidebar and Shift+Ctrl+M to show the second edit window.</p>
+<p>Script tabs can be rearranged by drag and drop.</p>
+<p>Scripts are saved automatically before any run, and on close.</p>
+<p>Color and syntax highlighting is supported for q and k, as well as other languages. The color config is in lib/edit.xml, and syntax coloring in k.lang and q.lang.</p>
+<h2 id="run-options">Run Options</h2>
+<p>In the following:</p>
+<ul>
+<li>A <em>line</em> includes subsequent lines if part of a multi-line sentence, see <a href="edit.htm#multi-line">Multi Line</a>.</li>
+<li>some commands include <em>show result</em>, meaning that an assigned result is also displayed in the terminal</li>
+</ul>
+<p>Ctrl+Enter - run line at cursor, do not advance cursor (allows repeated run of line).</p>
+<p>Shift+Ctrl+Enter - as Ctrl+Enter, plus show result.</p>
+<p>Ctrl+R - run line at cursor, and advance to next line.</p>
+<p>Shift+Ctrl+R - as Ctrl+R, plus show result.</p>
+<p>Ctrl+E - run selected lines.</p>
+<p>Shift+Ctrl+E - run all lines. Comment blocks are ignored - a line with only <code>/</code> starts a comment block, and only <code>\</code> finishes a comment block. Outside of a comment block, a line with only <code>\</code> terminates the run. Note that Shift+Ctrl+T clears the terminal, so it can be useful to hold down the Shift+Ctrl keys, then press T and E - this clears the output terminal and then runs all lines into the cleared terminal.</p>
+<p>Ctrl+L - load file into the session.</p>
+<p>F8 - run the clipboard.</p>
+<p>F9 and Ctrl+F9 load the project build/run scripts, see <a href="foldersprojects.htm">Folders and Projects</a>.</p>
+<h2 id="multi-line">Multi Line</h2>
+<p>qconsole reads multi-line entries from the edit window, as does the interpreter when loading a script. Any line that is indented is assumed to be part of the previous command. Thus the following is a single input line in the edit window:</p>
+<pre><code>show 10#s:
+
+ h&quot;select sum size by date,5 xbar time.minute from trade
+   where date in -30 sublist date,sym=`IBM&quot;
+</code></pre>
+<h2 id="searching">Searching</h2>
+<p>Ctrl+F is Find/Replace in the current script and Shift+Ctrl+F is Find in Files.</p>
+<p>Ctrl+click on a name will search for that name in the current project directory. If a single match is found, the corresponding script is opened at the match. If more than one match is found, the Find in Files dialog is opened with the several matches. If not found, the text selected is simply highlighted as usual.</p>
+<h2 id="git">Git</h2>
+<p>If the source is under git version control, the Project menu includes options to run gitgui and show git status.</p>
+<hr />
+<p>Prev: <a href="term.htm">Term</a> Next: <a href="foldersprojects.htm">Folders and Projects</a><br/></p>
+<p><a href="index.htm">Index</a></p>
+</body>
+</html>
