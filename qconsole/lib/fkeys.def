@@ -17,7 +17,6 @@
 #
 # defaults:
 
-8,1,Run clipboard,0!:101 clipread''
 10,0,Run all lines,run_all_jgtkide_''
 c10,0,'Clear terminal, then run all lines',run_all_clear_jgtkide_''
 c12,3,Increase Font,fontinc_jgtkide_''
