@@ -14,7 +14,7 @@ f() {
 # wait for listening port
 w() {
 for i in `seq 1 20`; do
-  S=`netstat -ln -A inet | grep LISTEN | grep ":$1"`
+  S=`netstat -lnt -A inet | grep ":$1"`
   if [ -n "$S" ]; then return 0; fi; sleep 0.25
 done
 }

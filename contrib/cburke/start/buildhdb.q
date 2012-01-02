@@ -127,7 +127,7 @@ batch:{[x;len]
   s:p0*accum each d n;
   s:s + (p1-last each s)*{int01 count x} each s;
   qp::len#0.0;
-  (qp raze n):rnd raze s;
+  (qp n):rnd s;
   qn::0}
 
 / =========================================================

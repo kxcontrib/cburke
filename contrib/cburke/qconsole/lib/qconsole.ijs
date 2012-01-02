@@ -2,14 +2,15 @@
 3 : 0 ''
 
 notdef=. 0: ~: 4!:0 @ <
+hostpathsep=: ('/\'{~6=9!:12'')&(I. @ (e.&'/\')@] })
 jpathsep=: '/'&(('\' I.@:= ])})
 winpathsep=: '\'&(('/' I.@:= ])})
-PATHJSEP_j_=: '/'                 
+PATHJSEP_j_=: '/'
 IF64=: 16={:$3!:3[2
 'IFUNIX IFWIN IFWINCE'=: 5 6 7 = 9!:12''
 IFGTK=: IFJHS=: IFBROADWAY=: 0
-IFJ6=: 0     
-IFWINE=: IFWIN > 0-:2!:5'_'   
+IFJ6=: 0
+IFWINE=: IFWIN > 0-:2!:5'_'
 if. IF64 do.
   IFWOW64=: 0
 else.
@@ -319,7 +320,7 @@ DLL_PATH=: a: -.~ <;._1 ':',llp,def_path
 find_dll=: 3 : 0
 DLL_PATH find_dll y
 :
-if. UNAME-:'Linux' do. ('find_dll decommitted') 13!:8 ] 24 end.  
+if. UNAME-:'Linux' do. ('find_dll decommitted') 13!:8 ] 24 end.
 if. -.IFUNIX do. y return. end.
 y=. ,y
 if. (UNAME-:'Darwin') do. ext=. '.dylib*' else. ext=. '.so*' end.
@@ -337,20 +338,22 @@ class=. >(0=#y){y;'default'
 p=. 9!:46''
 q=. (>:p i: '/'){.p
 fs=. (<q),each {."1[1!:0<q,'*.',class
-fs=. fs-.<p 
+fs=. fs-.<p
 for_f. fs do.
   v=. 2<.>:a.i.1!:11 f,<0 1
-  (v{a.) 1!:12 f,<0 
+  (v{a.) 1!:12 f,<0
 end.
 i.0 0
 )
 setbreak=: 3 : 0
-p=. jpath '~break/'
-1!:5 ::] <p
-f=. p,(":2!:6''),'.',y
-({.a.) 1!:12 f;0 
-9!:47 f
-f
+try.
+  p=. jpath '~break/'
+  1!:5 ::] <p
+  f=. p,(":2!:6''),'.',y
+  ({.a.) 1!:12 f;0
+  9!:47 f
+  f
+catch. '' end.
 )
 cocurrent 'z'
 calendar=: 3 : 0
@@ -1157,22 +1160,22 @@ chopstring=: 3 : 0
 dat=. y
 'fd sd'=. 2{. boxopen x
 assert. 1 = #fd
-if. =/sd do. sd=. (-<:#sd)}.sd   
-else. 
-  s=. {.('|'=fd){ '|`'  
+if. =/sd do. sd=. (-<:#sd)}.sd
+else.
+  s=. {.('|'=fd){ '|`'
   dat=. dat rplc ({.sd);s;({:sd);s
   sd=. s
 end.
 dat=. dat,fd
 b=. dat e. fd
 c=. dat e. sd
-d=. ~:/\ c                       
-fmsk=. b > d                     
-smsk=. (> (0 , }:)) c            
-smsk=. -. smsk +. c *. 1|.fmsk   
-y=. smsk#y,fd   
+d=. ~:/\ c
+fmsk=. b > d
+smsk=. (> (0 , }:)) c
+smsk=. -. smsk +. c *. 1|.fmsk
+y=. smsk#y,fd
 fmsk=. 0:^:(,@1: -: ]) smsk#fmsk
-fmsk <;._2 y  
+fmsk <;._2 y
 )
 dltbs=: LF&$: : (4 : 0)
 txt=. ({.x), y
@@ -1232,7 +1235,6 @@ if. *./ 1 = oldlen do.
   
 else.
   
-  
   hit=. old I. @ E. each <txt
   cnt=. # &> hit
   
@@ -1268,7 +1270,7 @@ else.
   
   hit=. ; hit
   ind=. /: (#hit) $ 1 2 3
-  hnx=. (/: ind { hit) { ind    
+  hnx=. (/: ind { hit) { ind
   bgn=. (hnx { hit) + +/\ 0, }: hnx { cnt # del
   
 end.
@@ -1590,8 +1592,8 @@ case. do.
     2!:0'which google-chrome'
     'google-chrome' return. catch. end.
   try.
-    2!:0'which chromium-browser'
-    'chromium-browser' return. catch. end.
+    2!:0'which chromium'
+    'chromium' return. catch. end.
   try.
     2!:0'which firefox'
     'firefox' return. catch. end.
@@ -1682,7 +1684,7 @@ if. '~' ~: {. nam do. return. end.
 fld=. SystemFolders, UserFolders
 ind=. nam i. '/'
 tag=. }. ind {. nam
-if. 0=#tag do.       
+if. 0=#tag do.
   tag=. 'home'
   nam=. '~home',}.nam
   ind=. nam i. '/'
@@ -1805,7 +1807,7 @@ if. 0=L.y do.
     y=. cutnames y
   end.
 end.
-y=. y -. Ignore, IFJHS#;:'plot viewmat'   
+y=. y -. Ignore, IFJHS#;:'viewmat'
 if. 0=#y do. '' return. end.
 ndx=. ({."1 Public) i. y
 ind=. I. ndx < # Public
@@ -1847,13 +1849,17 @@ if. IFBROADWAY do.
   smoutput msg
   EMPTY return.
 end.
-if. IFJHS do.         
+if. IFJHS do.
   xmr ::0: file
   EMPTY return.
 end.
 editor=. (Editor_j_;Editor_nox_j_){::~ nox=. IFUNIX *. (0;'') e.~ <2!:5 'DISPLAY'
 if. 0=#editor do. EMPTY return. end.
-cmd=. editor stringreplace~ '%f';(dquote >@fboxname file);'%l';(":>:row)
+if. 1 e. '%f' E. editor do.
+  cmd=. editor stringreplace~ '%f';(dquote >@fboxname file);'%l';(":>:row)
+else.
+  cmd=. editor, ' ', (dquote >@fboxname file)
+end.
 try.
   if. IFUNIX do.
     if. x do.
@@ -1917,8 +1923,8 @@ end.
 )
 coclass 'jcompare'
 
-MAXPFX=: 100        
-MAXLCS=: *: MAXPFX  
+MAXPFX=: 100
+MAXLCS=: *: MAXPFX
 cin=: e. ,
 fmt0=: 'p<0 [>q<] >' & (8!:0)
 fmt1=: 'p<1 [>q<] >' & (8!:0)
@@ -2642,8 +2648,8 @@ ncm=. com < (1|.0,}.com) +. (0,}._1|.com)
 msk=. com +: ncm *. dat=a:
 dat=. msk # dat
 
-f=. 'NB.'&E. <: ~:/\@(e.&'''')
-g=. #~ *./\@f
+f=. *./\ @ ('NB.'&E. <: ~:/\@(e.&''''))
+g=. f dtb@#^:(0 e. [) ]
 ; (g each dat) ,each LF
 )
 ffoldername=: 3 : 0
@@ -2669,9 +2675,12 @@ getprojname=: 3 : 0
 ProjectName,(0=#ProjectName)#ProjectPath
 )
 projname2path=: 3 : 0
+y=. jpathsep y
 if. '~'={. y do.
   jpath y
-elseif. ('/'={.y) +: </ y i. ':/' do.
+elseif. ('./'-:y) +. '.' -:&, y do.
+  1!:43''
+elseif. ('./'e.~{.y) +: </ y i. ':/' do.
   jpath '~',y
 elseif. do.
   y
@@ -2697,6 +2706,13 @@ end.
 projssource=: 3 : 0
 projread''
 Source;<projsname each Source
+)
+fixdot=: 4 : 0
+if. IFUNIX do.
+  if. '/'~:{.y do. x,'/',y else. y end.
+else.
+  if. '.'={.y do. x,'/',y else. y end.
+end.
 )
 PPScript=: jpath '~system/util/pp.ijs'
 Project=: ProjectPath=: ProjectName=: ''
@@ -3176,7 +3192,7 @@ coerase <'jptemp'
 r
 )
 readsource1=: 4 : 0
-s=. readprojectsource y
+s=. (projname2path y)&fixdot&.> readprojectsource y
 dat=. freads each s
 if. (<_1) e. dat do.
   fls=. ; ' ' ,each toprojectfolder each s #~ (<_1) = dat
@@ -3700,7 +3716,7 @@ j=. <;._2 (0 : 0)
 )
 
 SDERRORS=: (0 ". 5 {. &> j) ; < 6 }.each j
-SDERRORS=: ((10000*IFUNIX) | >{.SDERRORS);{:SDERRORS 
+SDERRORS=: ((10000*IFUNIX) | >{.SDERRORS);{:SDERRORS
 
 tostring=: 3 : 0
 }: ;'.',~each ":each a.i.y
@@ -3716,9 +3732,9 @@ if. 0~:res y do. (sdsockerror'');0;'';0 return. end.
 )
 
 flip=: 'a'={.2 ic a.i.'a'
-bigendian=: |.^:flip 
-hns=: 3 : 'a.{~256 256#:y'          
-hs=: 3 : 'bigendian a.{~256 256#:y' 
+bigendian=: |.^:flip
+hns=: 3 : 'a.{~256 256#:y'
+hs=: 3 : 'bigendian a.{~256 256#:y'
 res=: >@:{.
 
 sockaddr_in=: 3 : 0
@@ -3841,7 +3857,7 @@ end.
 fdset_bytes=: 4 : 0
 bitvector=. 1 y} (x*8)#0
 bytes=. a. {~ _8 #.@|.\ bitvector
-if. -.flip do. bytes=. , _4 |.\ bytes end. 
+if. -.flip do. bytes=. , _4 |.\ bytes end.
 bytes
 )
 fdset_fds=: 3 : 0
@@ -3856,8 +3872,8 @@ if. 0=#y do. y=. SOCKETS_jsocket_;SOCKETS_jsocket_;SOCKETS_jsocket_;0 end.
 time=. <<.1000000 1000000#:1000*t
 if. IFUNIX do.
   max1=. >:>./r,w,e,0
-  m=. 4  
-  n=. 32 
+  m=. 4
+  n=. 32
   bytes=. m*>:<.n%~max1
   r=. bytes fdset_bytes r
   w=. bytes fdset_bytes w
@@ -3915,7 +3931,7 @@ sdgetsockets=: 3 : '0;SOCKETS_jsocket_'
 sdcheck=: }. ` (sderror 13!:8 3:) @. (0 ~: >@{.)
 INVALID_SOCKET=: 1
 SOCKET_ERROR=: _1
-sdinit'' 
+sdinit''
 NB. task
 NB.
 NB. executing tasks with optional timeout or I/O
@@ -4467,7 +4483,7 @@ try.
   HOSTIP=: gethostip HOST
   SK=: sd_socket''
   sd_connect SK;HOSTIP,<PORT
-  send USER,1 0{a.  
+  send USER,1 0{a.
   res=. read''
   if. #res do.
     OK
@@ -4600,8 +4616,8 @@ case. 1 do.
   99 * *./ 2 = (#y),{.@}:@$ &> y
 case. do.
   select. 2 = $y
-  case. 0 1 do. 99 
-  case. 1 0 do. 98 
+  case. 0 1 do. 99
+  case. 1 0 do. 98
   case. 1 1 do.
     r=. #@$ &> y
     if. 0 = *./{."1 r do. 99
@@ -4614,8 +4630,8 @@ end.
 )
 SK=: ''
 MAX=: 50000
-WAIT=: 60000 
-SKACCEPT=: SKLISTEN=: '' 
+WAIT=: 60000
+SKACCEPT=: SKLISTEN=: ''
 sd_accept=: 3 : '0 pick sd_check sdaccept y'
 sd_bind=: 3 : 'sd_check sdbind y'
 sd_reset=: 3 : 'sdcleanup $0'
@@ -4702,7 +4718,7 @@ case. 128 do.
 end.
 POS=: 0
 DAT=: y
-FMT=: x 
+FMT=: x
 res=. toJ ''
 rc=. POS ~: #DAT
 DAT=: ''
@@ -5023,7 +5039,7 @@ end.
 )
 getlist=: 3 : 0
 ad=. y
-n=. (JTYPES i. JINT){JSIZES 
+n=. (JTYPES i. JINT){JSIZES
 r=. ''
 while. 1 do.
   a=. memr ad,0,1,JINT
@@ -5111,7 +5127,7 @@ len=. 1 + # &> y
 t=. ; y ,each {.a.
 p=. mema #t
 t memw p,0,#t
-n=. (JTYPES i. JINT){JSIZES 
+n=. (JTYPES i. JINT){JSIZES
 s=. mema n * 1 + #y
 d=. 0 ,~ p + +/\0,}:len
 d memw s,0,(#d),JINT
@@ -5156,15 +5172,15 @@ settimer=: 3 : 0
 g_timeout_add_full 200;y;cb1;(cbreg 'sys_timer__');0
 )
 3 : 0''
-decodecesc_z_=: ('\\';'\';'\n';LF;'\r';CR;'\t';TAB;'\0';({.a.)) & stringreplace   
+decodecesc_z_=: ('\\';'\';'\n';LF;'\r';CR;'\t';TAB;'\0';({.a.)) & stringreplace
 if. UNAME-:'Linux' do.
-  bindtextdomain_z_=: 'libc.so.6 bindtextdomain > x *c *c'&cd         
-  bind_textdomain_codeset_z_=: 'libc.so.6 bind_textdomain_codeset > x *c *c'&cd         
-  textdomain_z_=: 'libc.so.6 textdomain > x *c'&cd                    
-  gettext_z_=: 3 : 'decodecesc memr 0 _1 2,~ ''libc.so.6 gettext > x *c''&cd <y'                 
-  dgettext_z_=: 3 : 'decodecesc memr 0 _1 2,~ ''libc.so.6 dgettext > x *c *c''&cd |.@y'          
-  ngettext_z_=: 3 : 'decodecesc memr 0 _1 2,~ ''libc.so.6 ngettext > x *c *c x''&cd y'           
-  dngettext_z_=: 3 : 'decodecesc memr 0 _1 2,~ ''libc.so.6 dngettext > x *c *c *c x''&cd _1 |.y' 
+  bindtextdomain_z_=: 'libc.so.6 bindtextdomain > x *c *c'&cd
+  bind_textdomain_codeset_z_=: 'libc.so.6 bind_textdomain_codeset > x *c *c'&cd
+  textdomain_z_=: 'libc.so.6 textdomain > x *c'&cd
+  gettext_z_=: 3 : 'decodecesc memr 0 _1 2,~ ''libc.so.6 gettext > x *c''&cd <y'
+  dgettext_z_=: 3 : 'decodecesc memr 0 _1 2,~ ''libc.so.6 dgettext > x *c *c''&cd |.@y'
+  ngettext_z_=: 3 : 'decodecesc memr 0 _1 2,~ ''libc.so.6 ngettext > x *c *c x''&cd y'
+  dngettext_z_=: 3 : 'decodecesc memr 0 _1 2,~ ''libc.so.6 dngettext > x *c *c *c x''&cd _1 |.y'
   gettext_noop_z_=: decodecesc
 elseif. UNAME-:'Win' do.
   if. 1 [ IF64 do.
@@ -5216,7 +5232,7 @@ if. 3=GTKVER_j_ do.
     libpangocairo=: <dquote libdir,'libpangocairo-1.0.0.dylib'
     libpixbuf=: <dquote libdir,'libgdk_pixbuf-2.0.0.dylib'
     libxml=: <dquote libdir,'libxml2.2.dylib'
-    if. -.fexist '"'-.~>libigemac do. libigemac=: '' end.   
+    if. -.fexist '"'-.~>libigemac do. libigemac=: '' end.
   case. 'Linux' do.
     libglib=: <'libglib-2.0.so.0'
     libcairo=: <'libcairo.so.2'
@@ -5262,7 +5278,7 @@ else.
     libpangocairo=: <dquote libdir,'libpangocairo-1.0.0.dylib'
     libpixbuf=: <dquote libdir,'libgdk_pixbuf-2.0.0.dylib'
     libxml=: <dquote libdir,'libxml2.2.dylib'
-    if. -.fexist '"'-.~>libigemac do. libigemac=: '' end.   
+    if. -.fexist '"'-.~>libigemac do. libigemac=: '' end.
     if. -.fexist '"'-.~>libgtk do.
       libgdk=: <dquote libdir,'libgdk-x11-2.0.0.dylib'
       libgtk=: <dquote libdir,'libgtk-x11-2.0.0.dylib'
@@ -5352,7 +5368,7 @@ else.
 end.
 )
 
-ITERSIZE=: IF64{14 10 
+ITERSIZE=: IF64{14 10
 G_CHECKSUM_MD5=: 0
 G_CHECKSUM_SHA1=: 1
 G_CHECKSUM_SHA256=: 2
@@ -5414,7 +5430,7 @@ GDK_Super_L=: 16bffeb
 GDK_Super_R=: 16bffec
 GDK_Hyper_L=: 16bffed
 GDK_Hyper_R=: 16bffee
-GDK_EXPOSURE_MASK=: 1 (33 b.)~ 1          
+GDK_EXPOSURE_MASK=: 1 (33 b.)~ 1
 GDK_POINTER_MOTION_MASK=: 1 (33 b.)~ 2
 GDK_POINTER_MOTION_HINT_MASK=: 1 (33 b.)~ 3
 GDK_BUTTON_MOTION_MASK=: 1 (33 b.)~ 4
@@ -5449,7 +5465,7 @@ GDK_BUTTON2_MASK=: 1 (33 b.)~ 9
 GDK_BUTTON3_MASK=: 1 (33 b.)~ 10
 GDK_BUTTON4_MASK=: 1 (33 b.)~ 11
 GDK_BUTTON5_MASK=: 1 (33 b.)~ 12
-GDK_SUPER_MASK=: 1 (33 b.)~ 26     
+GDK_SUPER_MASK=: 1 (33 b.)~ 26
 GDK_HYPER_MASK=: 1 (33 b.)~ 27
 GDK_META_MASK=: 1 (33 b.)~ 28
 GDK_MODIFIER_MASK=: 16b5c001fff
@@ -5458,14 +5474,14 @@ GDK_COLORSPACE_RGB=: 0
 
 GDK_WINDOW_TYPE_HINT_NORMAL=: 0
 GDK_WINDOW_TYPE_HINT_DIALOG=: 1
-GDK_WINDOW_TYPE_HINT_MENU=: 2              
+GDK_WINDOW_TYPE_HINT_MENU=: 2
 GDK_WINDOW_TYPE_HINT_TOOLBAR=: 3
 GDK_WINDOW_TYPE_HINT_SPLASHSCREEN=: 4
 gdk_WINDOW_TYPE_HINT_UTILITY=: 5
 GDK_WINDOW_TYPE_HINT_DOCK=: 6
 GDK_WINDOW_TYPE_HINT_DESKTOP=: 7
-GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU=: 8     
-GDK_WINDOW_TYPE_HINT_POPUP_MENU=: 9        
+GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU=: 8
+GDK_WINDOW_TYPE_HINT_POPUP_MENU=: 9
 GDK_WINDOW_TYPE_HINT_TOOLTIP=: 10
 GDK_WINDOW_TYPE_HINT_NOTIFICATION=: 11
 GDK_WINDOW_TYPE_HINT_COMBO=: 12
@@ -5692,7 +5708,7 @@ GDK_BLANK_CURSOR=: _2
 GDK_CURSOR_IS_PIXMAP=: _1
 G_LOG_FLAG_RECURSION=: 0 (33 b.) 1
 G_LOG_FLAG_FATAL=: 1 (33 b.) 1
-G_LOG_LEVEL_ERROR=: 2 (33 b.) 1       
+G_LOG_LEVEL_ERROR=: 2 (33 b.) 1
 G_LOG_LEVEL_CRITICAL=: 3 (33 b.) 1
 G_LOG_LEVEL_WARNING=: 4 (33 b.) 1
 G_LOG_LEVEL_MESSAGE=: 5 (33 b.) 1
@@ -6191,6 +6207,7 @@ gtk_text_view_buffer_to_window_coords > n x i i i *i *i
 gtk_text_view_get_buffer > x x
 gtk_text_view_get_iter_at_position > n x *x *i i i
 gtk_text_view_get_iter_location > n x *x *c : xwyh in char (_2(3!:4)xywh)
+gtk_text_view_get_wrap_mode > x x
 gtk_text_view_new > x
 gtk_text_view_new_with_buffer > x x
 gtk_text_view_place_cursor_onscreen > n x
@@ -7044,7 +7061,7 @@ z
 gtk_gettypes=: 3 : 0
 t=. [;._2 GTKTYPES
 t=. ((>libgtk),' ') ,"1 t ,"1 ' >',"1 (2*IFUNIX) }. ' + x'
-t (15!:0 ::0:)"1 ''   
+t (15!:0 ::0:)"1 ''
 EMPTY
 )
 GTKTYPES=: 0 : 0
@@ -7372,6 +7389,7 @@ cb4=: f 5
 cb5=: f 6
 cb6=: f 7
 cb7=: f 8
+cb8=: f 9
 consigs=: 4 : 0
 'widget signal handler locale'=. 4{.y
 if. 0=#locale do. locale=. >coname'' else. locale=. ,>locale end.
@@ -7385,6 +7403,7 @@ consig4=: cb4 & consigs
 consig5=: cb5 & consigs
 consig6=: cb6 & consigs
 consig7=: cb7 & consigs
+consig8=: cb8 & consigs
 cbreg=: 3 : 0
 i=. cbregs_jgtk_ i. <y
 if. i<#cbregs_jgtk_ do. i return. end.
@@ -7442,7 +7461,7 @@ newiterstart=: 3 : 0
 i[gtk_text_buffer_get_start_iter y;i=. i.ITERSIZE
 )
 gtkinit=: 3 : 0
-if. gtkInitDone_jgtk_ do. i.0 0 return. end. 
+if. gtkInitDone_jgtk_ do. i.0 0 return. end.
 try.
   checkpoint=. 'gtksetenv'
   gtksetenv''
@@ -7451,7 +7470,7 @@ try.
   checkpoint=. 'g_thread_init'
   if. UNAME-:'Darwin' do.
     if. 1 e. 'libgtk-x11-2.0.0.dylib' E. >libgtk do.
-      g_thread_init ::0: 0        
+      g_thread_init ::0: 0
     else.
       g_thread_init 0
     end.
@@ -7459,7 +7478,7 @@ try.
     g_thread_init 0
   end.
   checkpoint=. 'gtk_init'
-  gtk_init (,0);0 
+  gtk_init (,0);0
   checkpoint=. 'setlocale'
   if. UNAME-:'Linux' do.
     Lc_Numeric_jgtk_=: memr 0 _1 2,~ 'libc.so.6 setlocale > x i *c'&cd 1;<<0
@@ -7486,6 +7505,7 @@ end.
 gtk_gettypes''
 cbregs_jgtk_=: 'bad0';'bad1'
 gtkInitDone_jgtk_=: 1
+IFBROADWAY_z_=: 'broadway' -: 2!:5 'GDK_BACKEND'
 i.0 0
 )
 gtksetenv=: 3 : 0
@@ -8070,7 +8090,7 @@ setstore=: 3 : 0
 'store data'=. y
 gtk_list_store_clear store
 iter=. i.ITERSIZE
-if. 1=#$data do. 
+if. 1=#$data do.
   for_p. data do.
     gtk_list_store_append store;iter
     gtk_list_store_set_1 store;iter;0;p,<_1
@@ -8143,7 +8163,7 @@ if. UNAME-:'Darwin' do.
     consig3 window;'key-press-event';'macwindowshortcut'
   end.
   if. modifier AND GDK_CONTROL_MASK do.
-    m=. (2^28)+modifier-GDK_CONTROL_MASK 
+    m=. (2^28)+modifier-GDK_CONTROL_MASK
   else.
     m=. modifier
   end.
@@ -8153,7 +8173,7 @@ gtk_widget_add_accelerator menu;'activate';accel_group;key;modifier;GTK_ACCEL_VI
 )
 
 create_menu_container=: 3 : 0
-container=. gtk_menu_new'' 
+container=. gtk_menu_new''
 gtk_menu_item_set_submenu y,container
 container
 )
@@ -8185,8 +8205,8 @@ mk
 )
 macmenu=: 3 : 0
 if. UNAME-:'Darwin' do.
-  if. -. ''-:libigemac do.   
-    gtk_widget_hide menu_bar 
+  if. -. ''-:libigemac do.
+    gtk_widget_hide menu_bar
     consig3 window;'focus_in_event';'focus_in_event'
   end.
 end.
@@ -8198,7 +8218,7 @@ a=. macmenushortcuts
 i=. (1{"1 a)i.<mk
 if. i<#a do.
   ".'''''',~>{.i{a
-  1 return. 
+  1 return.
 end.
 0
 )
@@ -8322,7 +8342,7 @@ d=. d OR ALPHA
 if. IF64 do. d=. 2 ic d end.
 buf=. gdk_pixbuf_new_from_data (15!:14<'d'),GDK_COLORSPACE_RGB,1,8,w,h,(4*w),0,0
 if. buf do.
-  gdk_cairo_set_source_pixbuf cr; buf; a; b  
+  gdk_cairo_set_source_pixbuf cr; buf; a; b
   cairo_paint cr
 end.
 g_object_unref buf
@@ -8461,18 +8481,26 @@ fcase. 'edit' do.
   bufwrite sb;text
 case. 'term' do.
   lm=. gtk_source_language_manager_get_default''
-  sl=. 0
-  if. #filename do.
-    sl=. gtk_source_language_manager_guess_language ::0: lm;filename;<<0
-  end.
-  if. sl = 0 do.
-    sl=. gtk_source_language_manager_get_language lm;,DefLang
+  if. class -: 'term' do.
+    sl=. gtk_source_language_manager_get_language lm;,'j'
+  else.
+    sl=. 0
+    if. #filename do.
+      sl=. gtk_source_language_manager_guess_language ::0: lm;filename;<<0
+    end.
+    if. sl=0 do.
+      x=. (filename i:'.')}.filename
+      lang=. ' ' -.~ ((<;.1 '.ijs.ijt.jproj.k.q.qproj.rproj') i. <x) { 'jjjkqjj '
+      if. #lang do.
+        sl=. gtk_source_language_manager_get_language lm;,lang
+      end.
+    end.
   end.
   if. sl do.
     gtk_source_buffer_set_language sb,sl
+    gtk_source_buffer_set_highlight_syntax sb,1
+    gtk_source_buffer_set_highlight_matching_brackets sb,ifMatchBrackets
   end.
-  gtk_source_buffer_set_highlight_syntax sb,1
-  gtk_source_buffer_set_highlight_matching_brackets sb,ifMatchBrackets
 case. 'view' do.
   bufwrite sb;text
 end.
@@ -8542,9 +8570,21 @@ else.
   s[gtk_source_view_set_show_line_numbers w,s
 end.
 )
+viewlinewrap=: 3 : 0
+'w s'=. 2 {. y,_1
+if. s<0 do.
+  gtk_text_view_get_wrap_mode w
+else.
+  s[gtk_text_view_set_wrap_mode w,s*2
+end.
+)
+viewinsert=: 3 : 0
+'w t'=. y
+gtk_text_buffer_insert w;(newitercursor w);(octal_j_ t);_1
+)
 viewgettop=: 3 : 0
-px=. memaz 4  
-py=. memaz 4  
+px=. memaz 4
+py=. memaz 4
 iter=. i.ITERSIZE
 gtk_text_view_window_to_buffer_coords y;2;0;0;(<px);<<py
 cx=. {.memri4 px
@@ -8716,7 +8756,7 @@ codestroy''
 arctan=: _3&o.
 dfr=: *&(180%1p1)
 OR=: 23 b./
-pafc=: 2p1&|@{:@(*.@(j./))  
+pafc=: 2p1&|@{:@(*.@(j./))
 calcAngle=: ([: pafc _1 1 * -)"1
 
 bufreport=: 3 : 0
@@ -8894,7 +8934,7 @@ if. bold do. pango_font_description_set_weight fnt, 700 end.
 pango_layout_set_font_description gtkpl,fnt
 pango_font_description_free fnt
 )
-glfontangle=: 3 : 0 "1 
+glfontangle=: 3 : 0 "1
 gtkfontangle=: y
 )
 glrgb=: 3 : 0 "1
@@ -8903,7 +8943,7 @@ gtkrgb=: y
 gllines=: 3 : 0 "1
 gtkcolor gtkpenrgb
 c=. <.-:#y=. <.y
-if. IF64 do. y=. _3 ic 2 ic y end. 
+if. IF64 do. y=. _3 ic 2 ic y end.
 gdk_draw_lines gtkpx;gtkgc;y;c
 )
 glpaint=: 3 : 0 "1
@@ -8940,7 +8980,7 @@ g_object_unref buf
 )
 glpolygon=: 3 : 0 "1
 c=. <.-:#y=. <.y
-if. IF64 do. y=. _3 ic 2 ic y end. 
+if. IF64 do. y=. _3 ic 2 ic y end.
 if. -.gtkbrushnull do.
   gtkcolor gtkbrushrgb
   gdk_draw_polygon gtkpx;gtkgc;1;y;c
@@ -8966,7 +9006,7 @@ glqwh=: 3 : 0
 gtkwh
 )
 glrect=: 3 : 0 "1
-if. 0 e. _2{.y do. return. end. 
+if. 0 e. _2{.y do. return. end.
 if. -.gtkbrushnull do.
   gtkcolor gtkbrushrgb
   gdk_draw_rectangle gtkpx,gtkgc,1,y
@@ -8975,7 +9015,7 @@ gtkcolor gtkpenrgb
 gdk_draw_rectangle gtkpx,gtkgc,0,y-0 0 1 1
 )
 glsel=: 3 : 0 "1
-'' 
+''
 )
 glsetbrush=: glbrush @ glrgb
 glsetpen=: glpen @ ((1 0 [ glrgb) :((2 {. [) glrgb))
@@ -8983,10 +9023,10 @@ gltext=: 3 : 0 "1
 gtkcolor gtktextrgb
 if. gtkunderline do.
   atl=. pango_attr_list_new ''
-  ul=. pango_attr_underline_new 1        
+  ul=. pango_attr_underline_new 1
   pango_attr_list_insert atl,ul
   pango_layout_set_attributes gtkpl,atl
-  pango_attr_list_unref atl              
+  pango_attr_list_unref atl
 end.
 if. 0=gtkfontangle do.
   pango_layout_set_text gtkpl;(,y);#y
@@ -8999,10 +9039,10 @@ else.
 end.
 if. gtkunderline do.
   atl=. pango_attr_list_new ''
-  ul=. pango_attr_underline_new 0        
+  ul=. pango_attr_underline_new 0
   pango_attr_list_insert atl,ul
   pango_layout_set_attributes gtkpl,atl
-  pango_attr_list_unref atl              
+  pango_attr_list_unref atl
 end.
 )
 gltextcolor=: 3 : 0 "1
@@ -9019,10 +9059,10 @@ glqextentw=: 3 : 0 "1
 {."1>glqextent each<;._2 y,LF#~LF~:{:y
 )
 glwindoworg=: 3 : 0 "1
-'' 
+''
 )
 
-0 : 0 
+0 : 0
 glcapture=:      11!:2062
 glcaret=:        11!:2065
 glcmds=:         11!:2999
@@ -9092,7 +9132,7 @@ if. 0= rc do.
 end.
 window=. gtk_builder_get_object builder;x
 if. 0=window do. builder, 0 return. end.
-GLADESIGNALS=: 0 5$'' 
+GLADESIGNALS=: 0 5$''
 h=. cbreg 'gladecallback_',(>coname''),'_'
 gtk_builder_connect_signals_full builder,cb7,h
 gladeconsig GLADESIGNALS
@@ -9100,11 +9140,11 @@ builder,window
 )
 gladereport=: 3 : 0
 t=. GLADESIGNALS
-han=. 2{"1 t    
-obj=. +/>3{"1 t 
-flg=. +/>4{"1 t 
-sig=. ~.1{"1 t  
-mul=. (1<+/"1 = a)#~.a=. 2{"1 t 
+han=. 2{"1 t
+obj=. +/>3{"1 t
+flg=. +/>4{"1 t
+sig=. ~.1{"1 t
+mul=. (1<+/"1 = a)#~.a=. 2{"1 t
 r=. ''
 if. obj do. r=. r,'row(s) with connect_object - not supported',LF end.
 if. flg do. r=. r,'row(s) with flags - not supported',LF end.
@@ -9123,11 +9163,11 @@ GLADESIGNALS=: GLADESIGNALS,object;signal;handler;connect_object;flags
 gladeconsig=: 3 : 0
 for_i. i.#y do.
   'object signal handler connect_object flags'=. i{y
-  if. connect_object do.           
-  elseif. flags do.           
-  elseif. '_event'-:_6{.signal do. 
+  if. connect_object do.
+  elseif. flags do.
+  elseif. '_event'-:_6{.signal do.
     consig3 object;signal;handler
-  elseif. 1 do.                    
+  elseif. 1 do.
     consig object;signal;handler
   end.
 end.
@@ -9394,10 +9434,11 @@ end.
 coclass 'jgtkide'
 IFGTK_z_=: 1
 LineNos=: 0
+LineWrap=: 0
 MaxText=: 1e6
 conn_init=: 0:
 
-bd=: 9!:6'' 
+bd=: 9!:6''
 jfe_z_=: 0 0$15!:16
 TabCloseStyle=: 0 : 0
 style "tab-close-button-style" {
@@ -9468,7 +9509,7 @@ if. 1 e. r=. sfx e. a.-.AlphaNum do.
   sfx=. sfx{.~ n1+n2
 end.
 sfx=. utf8 sfx
-gtk_text_buffer_insert_at_cursor pSB;sfx;#sfx  
+gtk_text_buffer_insert_at_cursor pSB;sfx;#sfx
 
 name=. getcurrentccppfx''
 if. pfx8-:name do.
@@ -9996,7 +10037,7 @@ is_shellscript=: 3 : 0
 )
 runlines=: runimmex1
 saveopenwindows=: 3 : 0
-noevents'' 
+noevents''
 if. window__locEdit do.
   1 tab_saveall__locEdit''
 end.
@@ -10276,7 +10317,7 @@ DMFavorites=: i.0 2
 DMFOUNDALL=: DMFOUNDCONTENTS=: ''
 NOTINSOURCE=: NOTINTARGET=: ''
 DIFFTIME=: DIFFCONT=: i.0 6
-DIFFTIMEST=: DIFFCONTST=: ''   
+DIFFTIMEST=: DIFFCONTST=: ''
 
 DMMSK=: ''
 DMTREEX=: ''
@@ -10288,12 +10329,12 @@ DMTAB=: 'std'
 DMCONTENTS=: 0
 DMTIMESTAMP=: 0
 
-DMSUBDIR=: 1 
-IGNOREST=: 0 
-IGNORENS=: 0 
-IGNORENT=: 0 
-IGNORESEP=: 1 
-IGNORELTW=: 0 
+DMSUBDIR=: 1
+IGNOREST=: 0
+IGNORENS=: 0
+IGNORENT=: 0
+IGNORESEP=: 1
+IGNORELTW=: 0
 TEXTBASE=: '/','text-base','/'
 dm_init=: 3 : 0
 if. 0=#DMCFGFILE do.
@@ -11027,7 +11068,7 @@ match_do=: 3 : 0
 
 NOTINSOURCE=: NOTINTARGET=: ''
 DIFFTIME=: DIFFCONT=: i.0 6
-DIFFTIMEST=: DIFFCONTST=: '' 
+DIFFTIMEST=: DIFFCONTST=: ''
 
 DMX=: ' ,' cutopen DMTypeX pick DMTypeT
 dmsource=: DMSOURCE
@@ -11073,7 +11114,7 @@ else.
   snm=. src&, each nms
 end.
 
-cmp=. snm filecmp tar&, each nms 
+cmp=. snm filecmp tar&, each nms
 DIFFCONT=: sort DIFFCONT, (cmp = 0) # dxy
 DIFFCONTST=: (1 {"1 DIFFCONT) earlier 4 {"1 DIFFCONT
 if. DMTIMESTAMP do.
@@ -11096,7 +11137,7 @@ ignorens_do''
 ignorent_do''
 ignorest_do''
 
-count=. {. y,1  
+count=. {. y,1
 DMFOUNDCONTENTS=: DMFOUNDALL=: ''
 
 hit=. +/ (#DIFFCONT),(#DIFFTIME),(#NOTINSOURCE),#NOTINTARGET
@@ -11494,6 +11535,10 @@ codestroy''
 0
 )
 Gray=: rgb2gtk 232 232 232
+edit_insert=: 3 : 0
+edit_current_def''
+viewinsert pSB;y
+)
 getselext=: 3 : 0
 r=. (1 + y i: '.') }. y
 if. 0=#r do. 0 pick ValExt end.
@@ -11932,7 +11977,7 @@ if. ctrl > shift do.
   case. GDK_y do.
     edit_current_def''
     gtk_source_buffer_redo pSB
-  case. 91 do.  
+  case. 91 do.
     1 [ ccp_new _1 return.
   end.
 end.
@@ -12192,6 +12237,7 @@ gtk_notebook_set_tab_detachable EditNB,pSW,1
 gtk_notebook_set_tab_reorderable EditNB,pSW,1
 gtk_notebook_set_menu_label_text EditNB;pSW;pSN
 viewlinenumbers pSV,LineNos
+viewlinewrap pSV,LineWrap
 setchildfocus pSV
 if. istempscript_j_ pFL do. setsaved 0 end.
 setmodified1 pSN;pLAB;pMOD
@@ -13856,8 +13902,8 @@ if. '[-' -: }. 3 {. txt do.
   if. helperror txt do. '' return. end.
 end.
 if. Class-:'term' do.
-  at=. pos{txt,LF          
-  as=. pos{LF,txt          
+  at=. pos{txt,LF
+  as=. pos{LF,txt
   if. *./ (at,as) e. ' ',CRLF do.
     '' [ helpword txt return.
   end.
@@ -13926,7 +13972,7 @@ end.
 )
 htmlhelpbaselib=: 3 : 0
   if. fexist f=. jpath '~.Main/', y do.
-    open f     
+    open f
   else.
     browse_j_ 'http://www.jsoftware.com/trac/base7/browser/trunk/', y
   end.
@@ -14474,6 +14520,18 @@ else.
 end.
 1
 )
+viewlinewrap_activate=: 3 : 0
+if. locTerm=coname'' do.
+  viewlinewrap termSV,-.viewlinewrap termSV
+else.
+  LineWrap_jgtkide_=: -.LineWrap_jgtkide_
+  edit_current_def''
+  if. EditPage>:0 do.
+    viewlinewrap"1 (page_svs''),.LineWrap_jgtkide_
+  end.
+end.
+1
+)
 launch_menu=: 3 : 0
 if. 0 = #Launch do. return. end.
 create_menu_sep y
@@ -14516,7 +14574,7 @@ clipcopy,gtk-copy,_Copy,cC,Copy,clipcopy_activate
 clipcut,gtk-cut,Cu_t,cX,Cut,clipcut_activate
 clippaste,gtk-paste,_Paste,cV,Paste,clippaste_activate
 
-editascii,,_Toggle Ascii Box Drawing,,Toggle Ascii Box Drawing,editascii_activate
+editascii,check0,_Toggle Ascii Box Drawing,,Toggle Ascii Box Drawing,editascii_activate
 editconfig,,Configure,,Configure,
 editfif,gtk-find,_Find in Files,csF,Find in Files,editfif_activate
 editfiw,gtk-find,_Find,cF,Find,editfiw_activate
@@ -14582,7 +14640,7 @@ helpgtksourceview,,GtkSourceView,,GtkSourceView,helpgtksourceview_activate
 helpgtktutorial,,GTK Tutorial,,Gtk Tutorial,helpgtktutorial_activate
 helppango,,Pango,,Pango,helppango_activate
 
-interrupt,,j console,,j console,interrupt
+interrupt,,J console,,J console,interrupt
 
 load_script,,_Load Script,cL,Load Script,runscript_activate
 
@@ -14637,7 +14695,8 @@ toolspacman,,_Package Manager,,Package Manager,toolspacman_activate
 toolslaunch,,Launch Pad,,Launch Pad,
 toolsstudio,,Studio,,Studio,
 
-viewlinenos,,Toggle Line _Numbers,,Toggle Line Numbers,viewlinenos_activate
+viewlinenos,check0,Toggle Line _Numbers,,Toggle Line Numbers,viewlinenos_activate
+viewlinewrap,check0,Toggle Line _Wrapping,,Toggle Line Wrapping,viewlinewrap_activate
 
 winclosex,,_Close non-Project Files,,Close non-Project Files,winclosex_activate
 windup,,_Duplicate Window,,Duplicate Edit Window,windup_activate
@@ -14898,6 +14957,7 @@ con ccmenu 'clearterm'
 create_menu_sep con
 if. asc do. con ccmenu 'editascii' end.
 if. IFSV do. con ccmenu 'viewlinenos' end.
+con ccmenu 'viewlinewrap'
 )
 viewx_menu=: 3 : 0
 'mb asc'=. y
@@ -15119,7 +15179,7 @@ proj_close''
 proj_fini=: 3 : 0
 sbfiles_open_folder ProjectPath_jp_
 widgetshow mnGit;gitcheck_jp_''
-widgetshow mnSVN;0 
+widgetshow mnSVN;0
 proj_menu_enable 1
 )
 proj_open=: 3 : 0
@@ -16046,6 +16106,7 @@ end.
 )
 sv_populate_popup=: 3 : 'popup_init y'
 term_close=: 3 : 0
+if. IFBROADWAY do. 1 return. end.
 if. ConfirmClose do.
   if. 0=mbnoyes 'term';(gettext 'OK to exit J?') do. 1 return. end.
 end.
@@ -16189,6 +16250,9 @@ exec readline termSB,gtk_text_buffer_get_line_count termSB
 term_clear=: 3 : 0
 gtk_text_buffer_delete bufiterbounds termSB
 term_append getprompt''
+)
+term_insert=: 3 : 0
+viewinsert termSB;y
 )
 coclass 'jtextview'
 coinsert 'jgtkide'
@@ -16398,7 +16462,7 @@ end.
 txt
 )
 coclass 'jgtkide'
-AA=: j=. cutopen 0 : 0
+j=. cutopen 0 : 0
 ! Reference/BangSymbol
 # Reference/NumberSign
 $ Reference/DollarSign
@@ -16908,7 +16972,8 @@ h,(jpath x{.t),x }. t
 readnextentry=: 3 : 0
 'txt mode ctx'=. y
 if. 0=#txt do. 0;'' return. end.
-cmd=. dtb detab 0 pick txt
+txt=. detab each txt
+cmd=. dtb 0 pick txt
 txt=. }. txt
 'mode cmd'=. gettextmode mode;cmd
 if. #ctx do.
@@ -16919,7 +16984,7 @@ cnt=. 0 i.~ ' ' = {.&> txt
 if. (cnt=0) +. ' ' = {.cmd do.
   1;res return.
 end.
-mid=. dtb each detab each cnt {. txt
+mid=. dtb each cnt {. txt
 end=. {:mid
 mid=. (0 pick mode splitcomment ]) each }:mid
 cnt=. cnt - *./ (cnt < #txt),' ' = >end
@@ -16932,6 +16997,7 @@ runlines=: 3 : 0
 row=. 0
 state=. 0
 blank=. 0
+txt=. detab each txt
 while. row < #txt do.
   n=. #s=. dtb row pick txt
   if. (n=1) *. '\'={.s do.
@@ -17388,6 +17454,27 @@ window_menu mb
 help_menu mb
 gtk_widget_show_all mb
 mb
+)
+editx_menu=: 3 : 0
+'m s'=. 2 {. y
+pop=. create_menu_popup m;(gettext '_Edit')
+con=. create_menu_container pop
+con ccmenu 'clipcut'
+con ccmenu 'clipcopy'
+con ccmenu 'clippaste'
+create_menu_sep con
+con ccmenu 'editfiw'
+con ccmenu 'editfif'
+if. s-:'edit' do.
+  create_menu_sep con
+  r=. con ccmenu 'toselection'
+  gtk_menu_item_set_submenu r,selection_menu''
+end.
+create_menu_sep con
+con ccmenu 'editfont'
+r=. con ccmenu 'editconfig'
+gtk_menu_item_set_submenu r,config_menu''
+con
 )
 script_menu=: 3 : 0
 pop=. create_menu_popup y;(gettext '_Script')

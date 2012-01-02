@@ -23,7 +23,8 @@ pathd:{[x;y]
 paths:pathd[qhome]
 path:{`$":",paths x}
 
-savenew:{$[y~@[0:;x;0];::;x 0: y]}
+savenew:{if[10h=@x;x:path x];$[y~@[0:;x;0];::;x 0: y]}
+
 reads:{
  d:.qx.path x;
  t:0: `/:d,`$(*|"/"\:x),".qproj";

@@ -22,7 +22,6 @@ e:"NONNONONNN" / ex
 
 cnt:count s
 pi:acos -1
-gen:{exp 0.0015 * normalrand x} / prices
 gen:{exp 0.001 * normalrand x} / prices
 normalrand:{(cos 2 * pi * x ? 1f) * sqrt neg 2 * log x ? 1f}
 randomize:{value "\\S ",string "i"$0.8*.z.p%1000000000}
