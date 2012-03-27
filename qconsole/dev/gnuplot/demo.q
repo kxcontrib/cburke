@@ -7,7 +7,7 @@
 
 / default size is 640x400
 / png options: truecolor
-/ font \"FreeSans,11\""; 
+/ font \"FreeSans,11\"";
 
 \d .g
 

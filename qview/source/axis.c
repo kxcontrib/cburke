@@ -141,7 +141,7 @@ void getdateaxis(int type)
 
   idate=dvec_dup(PDate);
   DO(len,idate->v[i]=floor(idate->v[i]));
-  dates=getdatesnub(PDate,max);
+  dates=getdatesnub(idate,max);
   val=getdateindex(dates,idate,PDate);
 
   if (type==1)
