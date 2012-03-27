@@ -62,8 +62,8 @@ K plot_init(K p)
   nms=kS(c);
   cls=c->n;
   if (cls==2) {
-    if ((0==strcmp("minute",nms[0]))
-     &&(0==strcmp("volume",nms[1])))
+    if ((0==strcmp("minute",nms[0])) &&
+     ((0==strcmp("size",nms[1])) || (0==strcmp("volume",nms[1]))))
       return plot_volprof(p);
   }
 

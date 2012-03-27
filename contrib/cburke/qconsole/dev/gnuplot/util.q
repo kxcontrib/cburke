@@ -21,7 +21,7 @@ cutcmd:{
  n:where (x=";") > {not x=y} scan x="\"";
  if[0=count n;:enlist x];
  1_'(0,1+n)_";",x}
- 
+
 / =========================================================
 fin:{system "gnuplot ",Dir,"gnu.plt";}
 

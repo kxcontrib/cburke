@@ -4,13 +4,11 @@ IFWIN=: 6=9!:12''
 
 jpathsep_z_=: '/'&(('\' I.@:= ])})
 GTKPATH=: '/gtk/' ,~ ({.~ i:&'/') jpathsep BINPATH
-PreserveAspect=: 1
 run=: 3 : 0
 gtkinit_z_''
 File=: y
 Dat=: fread File
 if. Dat-:_1 do. return. end.
-Pwh=: Twh=: 0
 Resize=: (<(1+File i:'.')}.File) e. ;: 'svg'
 make_win ''
 make_timer 200
@@ -33,7 +31,7 @@ pick=: >@{
 smoutput=: 0 0 $ 1!:2&2
 uucp=: u:@(7&u:)
 rescale=: 3 : 0
-p=. gdk_pixbuf_new_from_file_at_scale File;;/y,PreserveAspect,0
+p=. gdk_pixbuf_new_from_file_at_scale File;;/y,0,0
 gtk_image_set_from_pixbuf image,p
 )
 3 : 0''
@@ -171,7 +169,13 @@ if. new -: _1 do.
   0 return.
 end.
 Dat=: new
-if. Resize > Pwh-:Twh do.
+if. 10 >: {:Twh do.
+  make_timer 0
+  gtk_widget_destroy window
+  make_win''
+  make_timer 200 return.
+end.
+if. Resize do.
   rescale Twh
 else.
   gtk_image_set_from_file image;<File
@@ -181,6 +185,7 @@ timeout=: Timeout
 exit 0
 )
 make_win=: 3 : 0
+Pwh=: Twh=: 0
 window=: gtk_window_new 0
 gtk_window_set_title window;'view'
 consig3 window;'delete-event';'window_delete'

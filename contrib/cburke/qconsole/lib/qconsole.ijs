@@ -6,12 +6,13 @@ hostpathsep=: ('/\'{~6=9!:12'')&(I. @ (e.&'/\')@] })
 jpathsep=: '/'&(('\' I.@:= ])})
 winpathsep=: '\'&(('/' I.@:= ])})
 PATHJSEP_j_=: '/'
+IFDEF=: 3 : '0=4!:0<''DEF'',y,''_z_'''
 IF64=: 16={:$3!:3[2
 'IFUNIX IFWIN IFWINCE'=: 5 6 7 = 9!:12''
 IFGTK=: IFJHS=: IFBROADWAY=: 0
 IFJ6=: 0
 IFWINE=: IFWIN > 0-:2!:5'_'
-if. IF64 do.
+if. IF64 +. IFDEF'android' do.
   IFWOW64=: 0
 else.
   if. IFUNIX do.
@@ -20,15 +21,18 @@ else.
     IFWOW64=: 'AMD64'-:2!:5'PROCESSOR_ARCHITEW6432'
   end.
 end.
-if. IFUNIX do.
+if. IFDEF'android' do.
+  UNAME=:'Linux'
+elseif. IFUNIX do.
   UNAME=: (2!:0 'uname')-.10{a.
-else.
+elseif. do.
   UNAME=: 'Win'
 end.
 )
 jcwdpath=: (1!:43@(0&$),])@jpathsep@((*@# # '/'"_),])
 jsystemdefs=: 3 : 0
-0!:0 <jpath '~system/defs/',y,'_',(tolower UNAME),(IF64#'_64'),'.ijs'
+xuname=.>(IFDEF'android'){UNAME;'android'
+0!:0 <jpath '~system/defs/',y,'_',(tolower xuname),(IF64#'_64'),'.ijs'
 )
 18!:4 <'z'
 'TAB LF FF CR DEL EAV'=: 9 10 12 13 127 255{a.
@@ -46,8 +50,32 @@ each=: &.>
 echo=: 0 0&$ @ (1!:2&2)
 exit=: 2!:55
 every=: &>
+fliprgb=: 3 : 0
+s=. $y
+d=. ((#y),4)$2 (3!:4) y=. <.,y
+d=. 2 1 0 3{"1 d
+s$_2(3!:4),d
+)
+getargs=: 3 : 0
+ARGV getargs y
+:
+argb=. (]`(([: < 1: {. }.) , [: < 2: }. ])@.('-'"_ = {.))&.> x
+parm=. 32 = ;(3!:0)&.> argb
+((-. parm)#argb);(>parm#argb);(". (0 = isatty 0)#'stdin ''''')
+)
 getenv=: 2!:5
 inv=: inverse=: ^:_1
+3 : 0''
+if. 'Linux'-:UNAME do.
+  llib=.>(IFDEF'android'){'libc.so.6';'libc.so'
+  isatty=: (llib,' isatty > i i') & (15!:0)
+elseif. 'Darwin'-:UNAME do.
+  isatty=: 'libc.dylib isatty > i i' & (15!:0)
+elseif. do.
+  isatty=: 2: = ('kernel32 GetFileType > i x' & (15!:0)) @ ('kernel32 GetStdHandle > x i'& (15!:0)) @ - @ (10&+)
+end.
+''
+)
 items=: "_1
 fetch=: {::
 leaf=: L:0
@@ -155,6 +183,18 @@ t=. <;._1 '/invalid name/not defined/noun/adverb/conjunction/verb/unknown'
 type=: {&t@(2&+)@(4!:0)&boxopen
 ucp=: 7&u:
 ucpcount=: # @ (7&u:)
+3 : 0''
+if. 'Linux'-:UNAME do. 
+  if. IFDEF'android' do.
+   usleep=: 3 : '''libc.so usleep > i i'')&(15!:0) >.y'
+  else.
+   usleep=: 3 : '''libc.so.6 usleep > i i'')&(15!:0) >.y'
+  end.
+elseif. 'Darwin'-:UNAME do. usleep=: 3 : '''libc.dylib usleep > i i''&(15!:0) >.y'
+elseif. do. usleep=: 3 : '0: ''kernel32 Sleep > n i''&(15!:0) >.y % 1000'
+end.
+EMPTY
+)
 utf8=: 8&u:
 uucp=: u:@(7&u:)
 3 : 0''
@@ -309,30 +349,6 @@ Endian=: |.^:('a'~:{.2 ic a.i.'a')
 AND=: $:/ : (17 b.)
 OR=: $:/ : (23 b.)
 XOR=: $:/ : (22 b.)
-cocurrent 'z'
-3 : 0 ''
-if. -. (UNAME-:'Darwin')+.(UNAME-:'SunOS') do. DLL_PATH=: '' return. end.
-llp=. 2!:5 'LD_LIBRARY_PATH',~'DY'#~UNAME-:'Darwin'
-if. 0 -: llp do. llp=. '' end.
-def_path=. ':/usr/local/lib:/usr/lib:/usr/lib/ccs/lib:/etc/lib:/lib'
-DLL_PATH=: a: -.~ <;._1 ':',llp,def_path
-)
-find_dll=: 3 : 0
-DLL_PATH find_dll y
-:
-if. UNAME-:'Linux' do. ('find_dll decommitted') 13!:8 ] 24 end.
-if. -.IFUNIX do. y return. end.
-y=. ,y
-if. (UNAME-:'Darwin') do. ext=. '.dylib*' else. ext=. '.so*' end.
-for_dir. x do.
-  l=. (>dir), '/lib', y, ext
-  if. # fns=. \:~ 1!: 0 l do.
-    (>dir), '/', > (<0 0) { fns
-    return.
-  end.
-end.
-('could not locate dll ',y) 13!:8 ] 24
-)
 break=: 3 : 0
 class=. >(0=#y){y;'default'
 p=. 9!:46''
@@ -1160,22 +1176,26 @@ chopstring=: 3 : 0
 dat=. y
 'fd sd'=. 2{. boxopen x
 assert. 1 = #fd
-if. =/sd do. sd=. (-<:#sd)}.sd
+if. #sd do.
+  if. 1=#~.sd do. sd=. ,{.sd
+  else.
+    s=. {.('|'=fd){ '|`'
+    dat=. dat rplc ({.sd);s;({:sd);s
+    sd=. s
+  end.
+  dat=. dat,fd
+  b=. dat e. fd
+  c=. dat e. sd
+  d=. ~:/\ c
+  fmsk=. b > d
+  smsk=. (> (0 , }:)) c
+  smsk=. -. smsk +. c *. 1|.fmsk
+  y=. smsk#y,fd
+  fmsk=. 0:^:(,@1: -: ]) smsk#fmsk
+  fmsk <;._2 y
 else.
-  s=. {.('|'=fd){ '|`'
-  dat=. dat rplc ({.sd);s;({:sd);s
-  sd=. s
+  <;._2 dat,fd
 end.
-dat=. dat,fd
-b=. dat e. fd
-c=. dat e. sd
-d=. ~:/\ c
-fmsk=. b > d
-smsk=. (> (0 , }:)) c
-smsk=. -. smsk +. c *. 1|.fmsk
-y=. smsk#y,fd
-fmsk=. 0:^:(,@1: -: ]) smsk#fmsk
-fmsk <;._2 y
 )
 dltbs=: LF&$: : (4 : 0)
 txt=. ({.x), y
@@ -1431,17 +1451,19 @@ end.
 )
 octal=: 3 : 0
 t=. ,y
-x=. a. i. t
-n=. x e. 9 10 13
-m=. n < 32 > x
-if. (isutf8 t) > 1 e. m do. t return. end.
-r=. t ,"0 1 [ 3 # EAV
-if. #m=. I. m +. x>126 do.
-  s=. '\',.}.1 ": 8 (#.^:_1) 255,m{x
-  r=. s m} r
+if. LF e. t do.
+  t=. octal each <;._2 t,LF
+  }: ; t ,each LF return.
 end.
-EAV -.~ ,r
+u=. isutf8 t
+x=. a. i. t
+m=. (x ~: 13) *. x < 32
+if. u > 1 e. m do. t return. end.
+n=. I. m=. m +. u < x > 126
+s=. '\',.}.1 ": 8 (#.^:_1) 255,n{x
+s ((n+3*i.#n)+/i.4)} (>:3*m)#t
 )
+
 rmdir=: 3 : 0
 r=. 1;'not a directory: ',":y
 if. 0=#y do. r return. end.
@@ -2156,6 +2178,7 @@ Editor_nox
 GL2Backend
 GL2ExtGlcmds
 GTKVER
+RGBSEQ
 )
 
 cbname=: {.~ i.&' ' <. i.&'='
@@ -3357,6 +3380,13 @@ if. 0 = 1!:4 :: 0: <f do.
   f=. jpath '~tools/regex/',t
 end.
 rxdll=: '"',f,'" '
+
+NB. fall back one more time for android
+if. 0 = 1!:4 :: 0: <f do.
+ f=. (BINPATH i: '/'){. BINPATH
+ f=. (f i: '/'){. f
+ f=. f,'/lib/', t
+end.
 )
 
 rxcdm=: 1 : '(rxdll,x)&(15!:0)'
@@ -3573,7 +3603,7 @@ case. 'Win' do.
   closesocketJ=: 'closesocket i i' scdm
   ioctlsocketJ=: 'ioctlsocket i i i *i' scdm
 case. 'Linux' do.
-  c=. 'libc.so.6'
+  c=. >(IFDEF'android'){'libc.so.6';'libc.so'
   ccdm=: 1 : ('(''"',c,'" '',x)&(15!:0)')
   ncdm=: ccdm
   scdm=: ccdm
@@ -3586,17 +3616,6 @@ case. 'Darwin' do.
   ccdm=: 1 : ('(''"',c,'" '',x)&(15!:0)')
   ncdm=: ccdm
   scdm=: ccdm
-  wcdm=: 1 : ']'
-  LIB=: c
-  closesocketJ=: 'close i i' scdm
-  ioctlsocketJ=: 'ioctl i i i *i' scdm
-case. 'SunOS' do.
-  c=. find_dll 'c'
-  ccdm=: 1 : ('(''"',c,'" '',x)&(15!:0)')
-  n=. find_dll 'nsl'
-  ncdm=: 1 : ('(''"',n,'" '',x)&(15!:0)')
-  s=. find_dll 'socket'
-  scdm=: 1 : ('(''"',s,'" '',x)&(15!:0)')
   wcdm=: 1 : ']'
   LIB=: c
   closesocketJ=: 'close i i' scdm
@@ -3938,19 +3957,19 @@ NB. executing tasks with optional timeout or I/O
 NB.
 NB. TASKS WITHOUT I/O
 NB.
-NB.   fork 'notepad.exe'           NB. run notepad, no wait, no I/O
-NB.   5000 fork 'notepad.exe'      NB. run notepad, wait 5 sec, no I/O
-NB.   _1 fork 'notepad.exe'        NB. run notepad, until closed, no I/O
+NB.   fork_jtask_ 'notepad.exe'           NB. run notepad, no wait, no I/O
+NB.   5000 fork_jtask_ 'notepad.exe'      NB. run notepad, wait 5 sec, no I/O
+NB.   _1 fork_jtask_ 'notepad.exe'        NB. run notepad, until closed, no I/O
 NB.
-NB.   5000 fork 'cmd /k dir'  NB. show dir in cmd window for 5 sec and close
-NB.   _1 fork 'cmd /k dir'    NB. show dir in cmd window until user closes it
+NB.   5000 fork_jtask_ 'cmd /k dir'  NB. show dir in cmd window for 5 sec and close
+NB.   _1 fork_jtask_ 'cmd /k dir'    NB. show dir in cmd window until user closes it
 NB.
 NB.   launch jpath'~system'        NB. run default application, no wait
 NB.
 NB. TASKS WITH I/O
 NB.
-NB.   spawn 'net users'                    NB. get stdout from process
-NB.   '+/i.3 4'spawn'jconsole'             NB. call process with I/O
+NB.   spawn_jtask_ 'net users'                    NB. get stdout from process
+NB.   '+/i.3 4' spawn_jtask_ 'jconsole'           NB. call process with I/O
 NB.   12 15 18 21
 NB.
 NB. SHELL COMMANDS (WITH I/O)
@@ -4138,7 +4157,7 @@ NB.   timeout: 0 no wait, _1 infinite, >0 timeout
 NB.   cmdline: 'shortcmd arg1 arg2 ...'
 NB.   cmdline: '"command with space" arg1 ...'
 NB.
-NB. e.g. fork 'notepad.exe'
+NB. e.g. fork_jtask_ 'notepad.exe'
 fork=: (3 : 0)`([: 2!:1 '(' , ')&' ,~ ])@.IFUNIX
 0 fork y
 :
@@ -4208,8 +4227,8 @@ if. 0=nc<'LAUNCH_j_'do.if. 0<#LAUNCH_j_ do.LAUNCH=: LAUNCH_j_ end.end.
 launch=: 3 : 'shell LAUNCH,'' '',y'
 NB. task zdefs
 
-fork_z_=: fork_jtask_
-spawn_z_=: spawn_jtask_
+NB. fork_z_=: fork_jtask_
+NB. spawn_z_=: spawn_jtask_
 shell_z_=: shell_jtask_
 launch_z_=: launch_jtask_
 coclass 'cqclient'
@@ -5506,10 +5525,16 @@ GTK_RESPONSE_NO=: -9
 GTK_RESPONSE_APPLY=: -10
 GTK_RESPONSE_HELP=: -11
 
-GTK_STOCK_OK=: 'gtk-ok'
 GTK_STOCK_CANCEL=: 'gtk-cancel'
+GTK_STOCK_DIALOG_INFO=: 'gtk-dialog-info'
+GTK_STOCK_DIALOG_QUESTION=: 'gtk_stock_dialog_question'
+GTK_STOCK_DIALOG_WARNING=: 'gtk_stock_dialog_warning'
+GTK_STOCK_NO=: 'gtk-no'
+GTK_STOCK_OK=: 'gtk-ok'
 GTK_STOCK_OPEN=: 'gtk-open'
 GTK_STOCK_SAVE=: 'gtk-save'
+GTK_STOCK_STOP=: 'gtk_stock_stop'
+GTK_STOCK_YES=: 'gtk-yes'
 GTK_MESSAGE_INFO=: 0
 GTK_MESSAGE_WARNING=: 1
 GTK_MESSAGE_QUESTION=: 2
@@ -5567,6 +5592,11 @@ GTK_STOCK_OPEN=: 'gtk-open'
 GTK_STOCK_SAVE=: 'gtk-save'
 
 GTK_TOOLBAR_ICONS=: 0
+
+GTK_WRAP_NONE=: 0
+GTK_WRAP_CHAR=: 1
+GTK_WRAP_WORD=: 2
+GTK_WRAP_WORD_CHAR=: 3
 
 GTK_WIN_POS_CENTER=: 1
 GTK_WIN_POS_CENTER_ON_PARENT=: 4
@@ -5754,7 +5784,7 @@ cddeflog=: 1 : 0
 'f p'=. x
 if. (<f) e. <;._1 ' gtk_events_pending gtk_main_iteration' do.
   p & (15!:0)
-else.  
+else.
   fl=. > IFWIN{'/tmp/tracegtk.log';'c:\tracegtk.log'
   3 : ('if. Debug do. (''',p,''',LF) 1!:3 <''',fl,''' end.',LF,'''',p,''' 15!:0 y')
 end.
@@ -5820,7 +5850,9 @@ gdk_pixmap_new > x x i i i
 gdk_screen_get_default > x
 gdk_screen_get_display > x x
 gdk_screen_get_height > i x
+gdk_screen_get_height_mm > i x
 gdk_screen_get_width > i x
+gdk_screen_get_width_mm > i x
 gdk_window_get_parent > x x
 gdk_window_get_pointer > x x *x *x *i
 gdk_window_get_state > x x
@@ -5870,6 +5902,8 @@ gtk_about_dialog_set_website > n x *c
 
 gtk_accel_group_new > x
 
+gtk_acceletor_parse > n *c *x x
+
 gtk_adjustment_get_value > d x
 gtk_adjustment_new > x d d d d d d
 
@@ -5879,6 +5913,7 @@ gtk_alignment_set_padding > n x x x x x
 gtk_bin_get_child > x x
 gtk_box_pack_start > n x x x x x
 gtk_box_pack_end > n x x i i x
+gtk_box_reorder_child > n x x i
 : gtk_box_set_spacing > n x x
 
 gtk_builder_add_from_file > i x *c *x      : 2.12
@@ -5887,6 +5922,7 @@ gtk_builder_connect_signals_full > n x x x
 gtk_builder_get_object > x x *c
 gtk_builder_new > x
 
+gtk_button_get_image > x x
 gtk_button_new > x
 gtk_button_new_from_stock > x *c
 gtk_button_new_with_label > x *c
@@ -5896,6 +5932,8 @@ gtk_button_set_image > n x x
 gtk_button_set_label > n x *c
 gtk_button_set_relief > n x x
 
+gtk_cell_layout_pack_end > n x x i
+gtk_cell_layout_pack_start > n x x i
 gtk_cell_renderer_combo_new > x
 gtk_cell_renderer_pixbuf_new > x
 gtk_cell_renderer_set_alignment > n x f f
@@ -5905,6 +5943,7 @@ gtk_cell_renderer_toggle_new > x
 gtk_cell_renderer_toggle_get_active > i x
 gtk_cell_renderer_toggle_set_active > n x i
 
+gtk_check_button_new > x
 gtk_check_button_new_with_label > x *c
 gtk_check_button_new_with_mnemonic > x *c
 gtk_check_menu_item_get_active > i x
@@ -5948,6 +5987,7 @@ gtk_combo_box_text_get_active_text > x x        : since 2.24
 gtk_container_add n x x
 gtk_container_get_children > x x
 gtk_container_remove > n x x
+gtk_container_resize_children > n x
 gtk_container_set_border_width n x x
 
 gtk_dialog_add_action_widget > n x x x
@@ -5992,6 +6032,7 @@ gtk_file_filter_add_pattern > n x *c
 gtk_file_filter_new > x
 gtk_file_filter_set_name > n x *c
 
+gtk_fixed_move > n x x i i
 gtk_fixed_new > x
 gtk_fixed_put > n x x x x
 
@@ -6027,6 +6068,7 @@ gtk_image_menu_item_new_with_mnemonic > x *c
 gtk_image_menu_item_set_image > n x x
 gtk_image_new_from_file_utf8 > x *c : win64 version
 gtk_image_new_from_file > x *c
+gtk_image_new_from_pixbuf > x x
 gtk_image_new_from_stock > x *c x
 gtk_image_new > x
 gtk_image_set_from_file > n x *c
@@ -6091,6 +6133,8 @@ gtk_notebook_get_current_page > i x
 gtk_notebook_get_n_pages > i x
 gtk_notebook_get_nth_page > x x s : widget notebook,page
 gtk_notebook_get_tab_label > x x x
+gtk_notebook_get_tab_label_text > x x x
+gtk_notebook_insert_page > i x x x i
 gtk_notebook_insert_page_menu > i x x x x x
 gtk_notebook_new > x
 gtk_notebook_page_num > i x x
@@ -6116,7 +6160,13 @@ gtk_paned_pack2 > n x x i i
 gtk_paned_set_position > n x x
 gtk_paned_get_position > x x
 
+gtk_progress_bar_new > x
+gtk_progress_bar_set_fraction > n x d
+
 gtk_radio_button_new_with_mnemonic_from_widget > x x *c
+
+gtk_range_get_value > d x
+gtk_range_set_value > n x d
 
 gtk_rc_parse_string > n *c
 
@@ -6134,6 +6184,7 @@ gtk_scrolled_window_set_vadjustment > n x x
 gtk_separator_menu_item_new > x
 gtk_separator_tool_item_new > x
 
+gtk_spin_button_get_value_as_int > i x
 gtk_spin_button_get_value > d x
 gtk_spin_button_new_with_range > x d d d
 gtk_spin_button_set_value > n x d
@@ -6188,6 +6239,7 @@ gtk_text_iter_backward_chars > i *x i
 gtk_text_iter_backward_word_start > i *x
 gtk_text_iter_ends_line > i *x
 gtk_text_iter_ends_word > i *x
+gtk_text_iter_equal > i *x *x
 gtk_text_iter_forward_chars > i *x i
 gtk_text_iter_forward_to_line_end > i *x
 gtk_text_iter_forward_word_end > i *x
@@ -6221,7 +6273,9 @@ gtk_text_view_window_to_buffer_coords > n x x x x *x *x
 gtk_toggle_button_get_active > i x
 gtk_toggle_button_set_active > n x i
 
+gtk_tool_button_new > x x *c
 gtk_tool_item_new > x
+gtk_tool_item_set_tooltip > n x x *c *c
 
 gtk_toolbar_insert > n x x i
 gtk_toolbar_new > x
@@ -6237,21 +6291,28 @@ gtk_tooltips_set_tip > n x x *c *c
 
 gtk_tree_model_get_1 > n x *x x *x x
 gtk_tree_model_get_iter > i x *x x
+gtk_tree_model_get_iter_first > i x *x
 gtk_tree_model_get_iter_from_string > i x *x *c
 gtk_tree_model_get_n_columns > x x
 gtk_tree_model_get_path > x x *x
 gtk_tree_model_get_string_from_iter > x x *x
 gtk_tree_model_iter_n_children > x x *x
+gtk_tree_model_iter_next > i x *x
+
 gtk_tree_path_free > n x
 gtk_tree_path_get_indices * *
 gtk_tree_path_new_from_string > x *c
 gtk_tree_path_to_string > x x
+
+gtk_tree_selection_count_selected_rows > i x
 gtk_tree_selection_get_selected > i x *x *x
+gtk_tree_selection_get_tree_view > x x
+gtk_tree_selection_iter_is_selected > i x *x
 gtk_tree_selection_select_path > n x x
 gtk_tree_selection_set_mode > n x x
 gtk_tree_selection_unselect_all > n x
-gtk_tree_view_append_column > x x x
 
+gtk_tree_view_append_column > x x x
 gtk_tree_view_column_add_attribute > n x x *c x
 gtk_tree_view_column_get_alignment > f x
 gtk_tree_view_column_get_cell_renderers > x x
@@ -6328,16 +6389,21 @@ gtk_widget_destroy > n x
 gtk_widget_get_allocation > n x *i
 gtk_widget_get_allocated_height > i x
 gtk_widget_get_allocated_width > i x
+gtk_widget_get_can_default > i x
 gtk_widget_get_name > x x
 gtk_widget_get_pango_context > x x
 gtk_widget_get_parent > x x
 gtk_widget_get_parent_window > x x
+gtk_widget_get_size_request > n x *i *i
 gtk_widget_get_toplevel > x x
 gtk_widget_get_window > x x
+gtk_widget_grab_default > n x
 gtk_widget_grab_focus > n x
 gtk_widget_hide > n x
 gtk_widget_hide_all > n x
 gtk_widget_hide > i x
+gtk_widget_is_ancestor > i x x
+gtk_widget_is_toplevel > i x
 gtk_widget_modify_base > n x i *c
 gtk_widget_modify_font > n x x        : void view font_desc
 gtk_widget_modify_text > n x i *c
@@ -6358,6 +6424,7 @@ gtk_widget_show_now > n x
 
 gtk_window_activate_focus > i x
 gtk_window_add_accel_group > n x x
+gtk_window_get_focus > x x
 gtk_window_get_gravity > i x
 gtk_window_get_position > n x *i *i
 gtk_window_get_screen > x x
@@ -6560,6 +6627,27 @@ gtk_print_settings_set_use_color > n x i
 gtk_print_settings_to_file > i x *c x
 gtk_print_settings_to_key_file > n x x *c
 gtk_print_settings_unset > n x *c
+
+: get type
+gtk_alignment_get_type > x
+gtk_button_get_type > x
+gtk_combo_box_get_type > x
+gtk_dialog_get_type > x
+gtk_frame_get_type > x
+gtk_hbox_get_type > x
+gtk_hscale_get_type > x
+gtk_hscrollbar_get_type > x
+gtk_label_get_type > x
+gtk_notebook_get_type > x
+gtk_radio_button_get_type > x
+gtk_scrolled_window_get_type > x
+gtk_spin_button_get_type > x
+gtk_text_view_get_type > x
+gtk_tool_button_get_type > x
+gtk_tree_view_get_type > x
+gtk_vbox_get_type > x
+gtk_vscale_get_type > x
+gtk_vscrollbar_get_type > x
 )
 libpixbuf cddef each <;._2 [ 0 : 0
 gdk_pixbuf_add_alpha > x x i x x x : buf,use_substitute_color?,r,g,b
@@ -6571,6 +6659,7 @@ gdk_pixbuf_new_from_file_at_size > x *c x x x
 gdk_pixbuf_new_from_file_at_size_utf8 > x *c x x x : win64 version
 gdk_pixbuf_new_from_file_at_scale > x *c x x i x
 gdk_pixbuf_new_from_file_at_scale_utf8 > x *c x x i x : win64 version
+gdk_pixbuf_new_subpixbuf > x x i i i i
 gdk_pixbuf_get_width > x x
 gdk_pixbuf_get_height > x x
 gdk_pixbuf_get_pixels > x x
@@ -6590,18 +6679,18 @@ g_object_ref > x x
 g_object_unref > n x
 g_signal_connect_data x x *c x x x x
 g_type_init > n
+g_type_check_instance_is_a > i x x
 g_type_name > x x
 g_value_init > x *x s
 g_value_set_static_string > n * *
 g_value_take_string > n x *c
 g_object_ref_sink > x x
 )
-
-
 libpango cddef each <;._2 [ 0 : 0
 pango_font_description_from_string > x *c : font_desc font_string
 pango_font_description_free > n x         : font_desc
 pango_font_description_set_size > n x i
+pango_font_description_set_style > n x i
 pango_font_description_set_weight > n x i : bold=700
 pango_layout_new > x x
 pango_layout_get_context > x x
@@ -7371,7 +7460,12 @@ gtk_window_position_get_type
 gtk_window_type_get_type
 gtk_wrap_mode_get_type
 )
-gtkInitDone=: 0
+3 : 0''
+if. 0~: 4!:0 <'gtkInitDone_jgtk_' do.
+  gtkInitDone_jgtk_=: 0
+end.
+''
+)
 ifMatchBrackets=: 0
 DefCmt=: 'NB. '
 DefLang=: 'j'
@@ -7417,18 +7511,20 @@ i
 )
 cdcallback=: 3 : 0
 q=. {:w=. 15!:17''
+z=. 0
 if. q>:#cbregs_jgtk_ do.
-  smoutput 'callback invalid pointer: ',":w return.
+  z [ smoutput 'callback invalid pointer: ',":w return.
 end.
 h=. >q{cbregs_jgtk_
 if. 3~:4!:0 <h do.
-  smoutput 'callback undefined handler: ',h return.
+  z [ smoutput 'callback undefined handler: ',h return.
 end.
 try.
-  h~w
+  z=. >@{. h~w
 catchd.
-  smoutput 'callback run error: ',h,LF,13!:12''
+  z [ smoutput 'callback run error: ',h,LF,13!:12''
 end.
+z
 )
 cbfree=: 3 : 0
 if. 0=#y do. l=. coname'' else. l=. boxxopen y end.
@@ -7462,6 +7558,9 @@ i[gtk_text_buffer_get_start_iter y;i=. i.ITERSIZE
 )
 gtkinit=: 3 : 0
 if. gtkInitDone_jgtk_ do. i.0 0 return. end.
+if. UNAME-:'Linux' do.
+  if. ((2=GTKVER_j_) +. ((3=GTKVER_j_) *. 'broadway' -.@-: 2!:5 'GDK_BACKEND')) *. 0 -: 2!:5 'DISPLAY' do. 13!:8[3 end.
+end.
 try.
   checkpoint=. 'gtksetenv'
   gtksetenv''
@@ -7505,7 +7604,7 @@ end.
 gtk_gettypes''
 cbregs_jgtk_=: 'bad0';'bad1'
 gtkInitDone_jgtk_=: 1
-IFBROADWAY_z_=: 'broadway' -: 2!:5 'GDK_BACKEND'
+IFBROADWAY_z_=: (3=GTKVER_j_) *. 'broadway' -: 2!:5 'GDK_BACKEND'
 i.0 0
 )
 gtksetenv=: 3 : 0
@@ -7863,7 +7962,10 @@ gtk_box_pack_end hb, vb,1 1 0
 hb,btn
 )
 filechooser=: 3 : 0
+window filechooser y
+:
 'type title pattern path'=. y
+window=. x
 r=. ''
 action=. type{0 1 1 2
 stock=. type{GTK_STOCK_OPEN;GTK_STOCK_OK;GTK_STOCK_SAVE;GTK_STOCK_OK
@@ -8561,6 +8663,22 @@ sview_init=: 3 : 0
 initsearchpath''
 EMPTY
 )
+viewgettop=: 3 : 0
+px=. memaz 4
+py=. memaz 4
+iter=. i.ITERSIZE
+gtk_text_view_window_to_buffer_coords y;2;0;0;(<px);<<py
+cx=. {.memri4 px
+cy=. {.memri4 py
+memf px
+memf py
+gtk_text_view_get_iter_at_position y;iter;(<0);cx;cy
+gtk_text_iter_get_line <iter
+)
+viewinsert=: 3 : 0
+'w t'=. y
+gtk_text_buffer_insert w;(newitercursor w);(octal_j_ t);_1
+)
 viewlinenumbers=: 3 : 0
 if. -.IFSV do. 0 return. end.
 'w s'=. 2 {. y,_1
@@ -8577,22 +8695,6 @@ if. s<0 do.
 else.
   s[gtk_text_view_set_wrap_mode w,s*2
 end.
-)
-viewinsert=: 3 : 0
-'w t'=. y
-gtk_text_buffer_insert w;(newitercursor w);(octal_j_ t);_1
-)
-viewgettop=: 3 : 0
-px=. memaz 4
-py=. memaz 4
-iter=. i.ITERSIZE
-gtk_text_view_window_to_buffer_coords y;2;0;0;(<px);<<py
-cx=. {.memri4 px
-cy=. {.memri4 py
-memf px
-memf py
-gtk_text_view_get_iter_at_position y;iter;(<0);cx;cy
-gtk_text_iter_get_line <iter
 )
 viewnewselect=: 3 : 0
 'view pos fin new set'=. y
@@ -9340,14 +9442,14 @@ forkcmd=: 3 : 0
 if. IFUNIX do.
   2!:0 y, ('&' ~: {:y) # ' &'
 else.
-  fork y
+  fork_jtask_ y
 end.
 )
 shellcmd=: 3 : 0
 if. IFUNIX do.
   hostcmd y
 else.
-  spawn y
+  spawn_jtask_ y
 end.
 )
 setwinfocus=: 3 : 0
@@ -9684,9 +9786,13 @@ else.
   end.
 end.
 )
-
-input_jfe_=: input_jgtkide_
-output_jfe_=: output_jgtkide_
+3 : 0''
+if. -.IFJHS do.
+  input_jfe_=: input_jgtkide_
+  output_jfe_=: output_jgtkide_
+end.
+''
+)
 runimmex0=: 3 : 0
 if. #y do.
   inputx_jgtkide_=: y
@@ -11535,6 +11641,10 @@ codestroy''
 0
 )
 Gray=: rgb2gtk 232 232 232
+
+j=. 'ijs ijt k q r R sh tex'
+k=. 'NB. NB. / / # # # %'
+Comments=: (<;._1 ' ',j) ,: <;._1 ' ',k
 edit_insert=: 3 : 0
 edit_current_def''
 viewinsert pSB;y
@@ -11542,6 +11652,10 @@ viewinsert pSB;y
 getselext=: 3 : 0
 r=. (1 + y i: '.') }. y
 if. 0=#r do. 0 pick ValExt end.
+)
+getcomment=: 3 : 0
+x=. ({.Comments) i. < (1+y i: '.') }. y
+x pick ({:Comments),<Comment
 )
 getdirscripts=: 3 : 0
 p=. termsep_j_ y
@@ -12505,21 +12619,22 @@ end.
 sel=. bgn }. end {. txt
 csl=. <;.2 sel
 
-len=. #Comment
-com=. Comment,' '
+comment=. getcomment pFL
+len=. #comment
+com=. comment,' '
 
 select. y
 case. 'minus' do.
   msk=. -. ((len+5) {. each csl) e. (com,'----');com,'===='
   csl=. msk # csl
   msk4=. (<com) = (len+1) {. each csl
-  msk3=. msk4 < (<Comment) = len {. each csl
+  msk3=. msk4 < (<comment) = len {. each csl
   new=. ; ((msk4 * len+1) + msk3 * len) }. each csl
   set=. bgn + 0, <: #new
 case. 'plus' do.
   msk=. 1 < # &> csl
   if. 1<len do.
-    hdr=. msk{Comment;com
+    hdr=. msk{comment;com
   else.
     hdr=. msk{'';com
   end.
@@ -12565,7 +12680,10 @@ case. 'toggle' do.
 case. 'upper' do.
   new=. toupper sel
 case. 'wrap' do.
+  cnt=. +/ *./\. sel = LF
   new=. 70 foldtext sel
+  len=. +/ *./\. new = LF
+  new=. ((-len) }. new), cnt # LF
 end.
 
 if. -. new -: sel do.
@@ -14640,7 +14758,7 @@ helpgtksourceview,,GtkSourceView,,GtkSourceView,helpgtksourceview_activate
 helpgtktutorial,,GTK Tutorial,,Gtk Tutorial,helpgtktutorial_activate
 helppango,,Pango,,Pango,helppango_activate
 
-interrupt,,J console,,J console,interrupt
+interrupt,,j console,,j console,interrupt
 
 load_script,,_Load Script,cL,Load Script,runscript_activate
 
@@ -14679,10 +14797,10 @@ toglobals,'',_Global Assignments,,Global Assignments in File,toglobals_activate
 tolint,'',_Format,csP,Format Script,toformatscript_activate
 toselection,,Selection,,Selection,
 tosellower,'',_Lower Case,,Lower Case,tosellower_activate
-toselminus,'',_Remove nb.,csB,Remove nb.,toselminus_activate
-toselplus,'',_Add nb.,csN,Add nb.,toselplus_activate
-toselplusline1,'',_Add nb. ---,csK,Add nb. ---,toselplusline1_activate
-toselplusline2,'',_Add nb. ===,csL,Add nb. ===,toselplusline2_activate
+toselminus,'',_Remove Comment,csB,Remove Comment,toselminus_activate
+toselplus,'',_Add Comment,csN,Add Comment,toselplus_activate
+toselplusline1,'',_Add Comment ---,csK,Add Comment ---,toselplusline1_activate
+toselplusline2,'',_Add Comment ===,csL,Add Comment ===,toselplusline2_activate
 toselsort,'',_Sort,,Sort,toselsort_activate
 toseltoggle,'',_Toggle Case,,Toggle Case,toseltoggle_activate
 toselupper,'',_Upper Case,,Upper Case,toselupper_activate
@@ -16251,9 +16369,7 @@ term_clear=: 3 : 0
 gtk_text_buffer_delete bufiterbounds termSB
 term_append getprompt''
 )
-term_insert=: 3 : 0
-viewinsert termSB;y
-)
+term_insert=: 3 : 'viewinsert termSB;y'
 coclass 'jtextview'
 coinsert 'jgtkide'
 create=: makeview
@@ -16732,7 +16848,7 @@ Helps=: ndx {.each j
 Helpfiles=: (<'') ,~ (ndx+1) }. each j
 Version=: '1.03'
 browseq=: 3 : 0
-if. LocalWiki < 'kxwiki/' matchhead y do.
+if. LocalWiki < 'code.kx.com/' matchhead y do.
   if. 'x'={:y do.
     y=. (-(a.i_2{' ',y) e. 65+i.26) }. y
   end.
@@ -16743,7 +16859,7 @@ end.
 browse_j_ url
 )
 browseref=: 3 : 0
-browseq 'kxwiki/trac/wiki/',y
+browseq 'code.kx.com/wiki/',y
 )
 helpabout_activate=: 3 : 0
 w=. gtk_about_dialog_new''
@@ -16759,13 +16875,13 @@ cb_help_brief=: 3 : 0
 browseq 'briefref'
 )
 cb_help_interc=: 3 : 0
-browseq 'kxwiki/trac/wiki/Cookbook/InterfacingWithC'
+browseq 'code.kx.com/wiki/Cookbook/InterfacingWithC'
 )
 cb_help_reference=: 3 : 0
-browseq 'kxwiki/trac/wiki/Reference'
+browseq 'code.kx.com/wiki/Reference'
 )
 cb_help_wiki=: 3 : 0
-browseq 'kxwiki/trac/wiki/WikiStart'
+browseq 'code.kx.com/wiki/WikiStart'
 )
 getnamefromwords=: 3 : 0
 'p len'=. y

@@ -1,5 +1,5 @@
 / ascii85
-/ The encoding does not begin with <~, though sometimes 
+/ The encoding does not begin with <~, though sometimes
 / this is allowed. However PDF files do not accept this prefix.
 / Decoding does support the prefix.
 
