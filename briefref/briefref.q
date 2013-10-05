@@ -2,7 +2,7 @@
 
 h:getenv`HOME
 S:`$":",h,"/svn/kx/contrib/simon/help/texts"
-T:`$":",h,"/briefref.html"
+T:`$":",h,"/temp/briefref.html"
 
 Hdr:(
  "<html><head>";
