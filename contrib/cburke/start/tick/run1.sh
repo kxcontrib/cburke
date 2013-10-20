@@ -21,11 +21,11 @@ done
 
 case $1 in 
  "ticker" ) f "tickerplant" "$D/ticker.q -p 5010";w 5010 ;;
- "rdb" ) f $1 "$D/cx.q $1 -p 5011" ;;
- "hlcv" ) f $1 "$D/cx.q $1 -p 5014" ;;
- "last" ) f $1 "$D/cx.q $1 -p 5015" ;;
- "tq" ) f $1 "$D/cx.q $1 -p 5016" ;;
- "vwap" ) f $1 "$D/cx.q $1 -p 5017" ;;
+ "rdb" ) f $1 "$D/cx.q $1 -p 5011 -t 1000" ;;
+ "hlcv" ) f $1 "$D/cx.q $1 -p 5014 -t 1000" ;;
+ "last" ) f $1 "$D/cx.q $1 -p 5015 -t 1000" ;;
+ "tq" ) f $1 "$D/cx.q $1 -p 5016 -t 1000" ;;
+ "vwap" ) f $1 "$D/cx.q $1 -p 5017 -t 1000" ;;
  "show" ) f $1 "$D/cx.q $1" ;;
  "feed" ) f "feed" "$D/feed.q localhost:5010 -t 107" ;;
 esac
