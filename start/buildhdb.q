@@ -19,8 +19,8 @@ dst:`:start/db      / database root
 dsp:""              / optional database segment root
 dsx:5               / number of segments
 
-bgn:2010.12.01      / begin, end
-end:2010.12.31      / (only mon-fri used)
+bgn:2013.05.01      / begin, end
+end:2013.05.31      / (only mon-fri used)
 
 / approximate values:
 nt:1000             / trades per stock per day
@@ -28,8 +28,7 @@ qpt:5               / quotes per trade
 npt:3               / nbbo per trade
 nl2:1000            / level II entries in day
 
-\S 269157           / random seed
-
+\S 104831           / random seed
 / util
 
 pi:acos -1
@@ -41,6 +40,7 @@ normalrand:{(cos 2 * pi * x ? 1f) * sqrt neg 2 * log x ? 1f}
 rnd:{0.01*floor 0.5+x*100}
 xrnd:{exp x * limit[2] normalrand y}
 randomize:{value "\\S ",string "i"$0.8*.z.p%1000000000}
+shiv:{(last x)&(first x)|asc x+-2+(count x)?5}
 vol:{10+`int$x?90}
 vol2:{x?100*1 1 1 1 2 2 3 4 5 8 10 15 20}
 
@@ -53,7 +53,7 @@ choleski:{
  Y:p _'p#A;
  Z:p _'p _A;
  T:(flip Y) mmu inv X;
- L0:n #' (choleski X) ,\: (n-1)#0.0; 
+ L0:n #' (choleski X) ,\: (n-1)#0.0;
  L1:choleski Z-T mmu Y;
  L0,(T mmu p#'L0),'L1}
 
@@ -78,7 +78,7 @@ volprof:{
 
 / =========================================================
 write:{
- t:.Q.en[dst] y;
+ t:.Q.en[dst] update sym:`p#sym from `sym xasc y;
  $[count dsp;
   (` sv dsp,(`$"d",string dspx),`$x) set t;
   (` sv dst,`$x) set t];}
@@ -86,7 +86,7 @@ write:{
 
 sn:2 cut (
  `AMD;"ADVANCED MICRO DEVICES";
- `AIG;"AMERICAN INTL GROUP INC";            
+ `AIG;"AMERICAN INTL GROUP INC";
  `AAPL;"APPLE INC COM STK";
  `DELL;"DELL INC";
  `DOW;"DOW CHEMICAL CO";
@@ -100,10 +100,10 @@ sn:2 cut (
  `PRU;"PRUDENTIAL FINANCIAL INC.";
  `SBUX;"STARBUCKS CORPORATION";
  `TXN;"TEXAS INSTRUMENTS")
- 
+
 s:first each sn
 n:last each sn
-p:84 27 33 12 20 18 36 84 42 72 35 22 59 83 57
+p:33 27 84 12 20 72 36 51 42 29 35 22 59 63 18
 m:" ABHILNORYZ" / mode
 c:" 89ABCEGJKLNOPRTWZ" / cond
 e:"NONNONONNNNOONO" / ex
@@ -132,35 +132,35 @@ batch:{[x;len]
 
 / =========================================================
 / constrained random walk
-/ x max movement per step 
+/ x max movement per step
 / y max movement at any time (above/below)
 / z number of steps
 cgen:{
   m:reciprocal y;
   while[any (m>p) or y<p:prds 1.0+x*normalrand z];
-  p} 
+  p}
 
 / =========================================================
 getdates:{
  b:x 0;
  e:x 1;
  d:b + til 1 + e-b;
- d where 5> d-`week$d}
+ d:d where 5> d-`week$d;
+ hols:101 404 612 701 1001 1013 1225 1226;
+ d where not ((`dd$d)+100*`mm$d) in hols}
 
 / =========================================================
 makeprices:{
- r:cgen[0.02;3] each cnt#nd;
+ r:cgen[0.0375;3] each cnt#nd;
  r:choleskicor[ccf;1,'r];
- (p % first each r) * r *\: 1.25 xexp int01 nd+1}
+ (p % first each r) * r *\: 1.1 xexp int01 nd+1}
 
 / =========================================================
 / day volumes
 makevolumes:{
- v:cgen[0.02;3;x];
- v0:first v;
- v1:last v; 
+ v:cgen[0.03;3;x];
  a:vex xexp neg x;
- 0.05|a + (int01 x) * (v - v0) * (1-a) % v1-v0}
+ 0.05|2&v*a+((reciprocal last v)-a)*int01 x}
 / main
 
 cnt:count s
@@ -171,6 +171,7 @@ td:([]date:();sym:();open:();high:();low:();close:();price:();size:())
 prices:makeprices nd + 1
 volumes:floor (cnt*nt*qpt+npt) * makevolumes nd
 dspx:0
+patt:{update sym:`p#sym from `sym`time xasc x}
 
 day:{
   len:volumes x;
@@ -179,17 +180,17 @@ day:{
   r:asc 09:30:00.0+floor 23400000*volprof count qx;
   cx:len?qpt+npt;
   cn:count n:where cx=0;
-  sp:1=cn?2;
-  t:([]time:r n;sym:s qx n;price:qp n;size:vol cn;stop:sp;cond:cn?c;ex:e qx n);
+  sp:1=cn?20;
+  t:([]sym:s qx n;time:shiv r n;price:qp n;size:vol cn;stop:sp;cond:cn?c;ex:e qx n);
   tx:select open:first price,high:max price,low:min price,close:last price,price:sum price*size,sum size by sym from t;
   td,:([]date:(count s)#dx)+0!tx;
   cn:count n:where cx<qpt;
-  tq:([]time:r n;sym:s qx n;bid:(qp-qb)n;ask:(qp+qa)n;bsize:vol cn;asize:vol cn;mode:cn?m;ex:e qx n);
+  q:([]sym:s qx n;time:r n;bid:(qp-qb)n;ask:(qp+qa)n;bsize:vol cn;asize:vol cn;mode:cn?m;ex:e qx n);
   cn:count n:where cx>=qpt;
-  tn:([]time:r n;sym:s qx n;bid:(qp-qbb)n;ask:(qp+qba)n;bsize:vol cn;asize:vol cn);
+  b:([]sym:s qx n;time:r n;bid:(qp-qbb)n;ask:(qp+qba)n;bsize:vol cn;asize:vol cn);
   write[sa,"/trade/";t];
-  write[sa,"/quote/";tq];
-  write[sa,"/nbbo/";tn];
+  write[sa,"/quote/";q];
+  write[sa,"/nbbo/";b];
   dspx::(dspx+1) mod dsx;}
 
 day each til nd;
