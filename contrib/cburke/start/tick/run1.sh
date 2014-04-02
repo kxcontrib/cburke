@@ -1,9 +1,9 @@
 #!/bin/bash
 # run rdb demo
 
-D=start/tick
-Q="rlwrap l32/q"
-cd ~/q
+D=~/q/start/tick
+Q=~/q/l32/q
+cd ~/q/start/tick
 
 # load each q process in a new terminal
 f() {
@@ -19,13 +19,15 @@ for i in `seq 1 20`; do
 done
 }
 
+
+
 case $1 in 
- "ticker" ) f "tickerplant" "$D/ticker.q -p 5010";w 5010 ;;
- "rdb" ) f $1 "$D/cx.q $1 -p 5011 -t 1000" ;;
+ "ticker" ) f "tickerplant" "tick.q -p 5010";w 5010 ;;
+ "rdb" ) f $1 "tick/r.q -p 5011 -t 1000" ;;
  "hlcv" ) f $1 "$D/cx.q $1 -p 5014 -t 1000" ;;
  "last" ) f $1 "$D/cx.q $1 -p 5015 -t 1000" ;;
  "tq" ) f $1 "$D/cx.q $1 -p 5016 -t 1000" ;;
  "vwap" ) f $1 "$D/cx.q $1 -p 5017 -t 1000" ;;
  "show" ) f $1 "$D/cx.q $1" ;;
- "feed" ) f "feed" "$D/feed.q localhost:5010 -t 107" ;;
+ "feed" ) f "feed" "$D/feed.q localhost:5010 -t 507" ;;
 esac
