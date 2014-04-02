@@ -1,5 +1,5 @@
 rem rdb
 
 c:
-cd c:\q
-w32\q.exe start/tick/cx.q rdb -p 5011 
+cd c:\q\start\tick
+..\..\w32\q.exe tick/r.q -p 5011 

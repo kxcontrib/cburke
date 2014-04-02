@@ -1,6 +1,6 @@
 rem tickerplant
 
 c:
-cd c:\q
-w32\q.exe start/tick/ticker.q -p 5010
+cd c:\q\start\tick
+..\..\w32\q.exe tick.q -p 5010
  

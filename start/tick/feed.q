@@ -66,22 +66,22 @@ q:{
  (s i;p-qb n;p+qa n;vol x;vol x;x?m;e i)}
 
 feed:{h$[rand 2;
- ("upd";`trade;t 1+rand maxn);
- ("upd";`quote;q 1+rand qpt*maxn)];}
+ (".u.upd";`trade;t 1+rand maxn);
+ (".u.upd";`quote;q 1+rand qpt*maxn)];}
 
 feedm:{h$[rand 2;
- ("upd1";`trade;(enlist a#x),t a:1+rand maxn);
- ("upd1";`quote;(enlist a#x),q a:1+rand qpt*maxn)];}
+ (".u.upd";`trade;(enlist a#x),t a:1+rand maxn);
+ (".u.upd";`quote;(enlist a#x),q a:1+rand qpt*maxn)];}
 
 init:{
  o:"t"$9e5*floor (.z.T-3600000)%9e5;
  d:.z.T-o;
  len:floor d%113;
- feedm each o+asc len?d;}
+ feedm each `timespan$o+asc len?d;}
 
 h:neg hopen `::5010
-/ h("upd";`quote;q 15);
-/ h("upd";`trade;t 5);
+/ h(".u.upd";`quote;q 15);
+/ h(".u.upd";`trade;t 5);
 
 init 0
 .z.ts:feed
