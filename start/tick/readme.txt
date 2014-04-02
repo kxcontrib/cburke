@@ -6,7 +6,7 @@ c:\q in Windows and ~/q in Linux/Mac.
 This folder should also be placed in the default location, i.e. 
 c:\q\start\tick in Windows and ~/q/start/tick in Linux/Mac
 
-kdb+tick should be downloaded from http://kx.com/q/tick/tick.zip, unzipped and placed in start/tick.  This will create a further subdirectory called tick. The file, sym.q, which defines the table schema and is contained in the start/tick directory, should be copied into start/tick/tick.  This will give a directory with following files:
+kdb+tick should be downloaded from http://code.kx.com/wsvn/code/kx/kdb+tick and placed in start/tick.  You should therefore have a further subdirectory called tick. The file, sym.q, which defines the table schema and is contained in the start/tick directory, should be copied into start/tick/tick.  This will give a directory with following files:
 
 start/tick/tick.q 	- tickerplant script
 start/tick/tick/r.q 	- rdb script 
