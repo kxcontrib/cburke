@@ -1,6 +1,9 @@
 # ![J](j.png) J client for kdb+
 
 
+:point_right:
+https://code.kx.com/q/interfaces
+
 
 JQ is a socket interface to kdb+ from [J](https://www.jsoftware.com/#/), for example to provide a GUI for a kdb+ server. JQ was written in J602 for V2.4, and has been tested on w32, l32 and l64. 
 
